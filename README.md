@@ -163,7 +163,7 @@ This project is source-available for **personal use only** under the
 
 ## 👨‍💻 Author — المطوّر
 
-**زياد الحمادي — Ziyad Al-Hamadi**
+**زياد الحمادي — Ziad Al-hammadi**
 
 📞 ‎+967 784 908 515 · ✉️ z30432981@gmail.com
 

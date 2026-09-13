@@ -34,6 +34,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -208,12 +210,43 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
 
     fun clearChat() = _ui.update { it.copy(messages = emptyList(), error = null) }
 
+    private var genJob: kotlinx.coroutines.Job? = null
+
     fun send() {
         val s = _ui.value
         val text = s.input.trim()
         if (text.isBlank() || s.busy) return
-        _ui.update { it.copy(input = "", messages = it.messages + ChatMsg("user", text), error = null) }
-        viewModelScope.launch { runConversation() }
+        _ui.update { it.copy(input = "", messages = it.messages + ChatMsg("user", text), error = null, errorDetail = null) }
+        genJob = viewModelScope.launch { runConversation() }
+    }
+
+    /** Stops the running generation — streamed partials stay on screen. */
+    fun stopGeneration() {
+        genJob?.cancel()
+        genJob = null
+        c.deviceEngine.abort()
+        _ui.update { it.copy(busy = false, waiting = false) }
+    }
+
+    /** Reads text files picked from the phone into the chat input. */
+    fun attachFiles(uris: List<android.net.Uri>) {
+        viewModelScope.launch {
+            val sb = StringBuilder(_ui.value.input)
+            for (u in uris.take(5)) {
+                runCatching {
+                    val name = u.lastPathSegment?.substringAfterLast('/') ?: "file"
+                    val text = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        c.appContext.contentResolver.openInputStream(u)?.bufferedReader()?.use { it.readText() }
+                    }.orEmpty()
+                    if (text.isNotBlank()) {
+                        if (sb.isNotBlank()) sb.append("\n\n")
+                        sb.append("📎 ").append(name).append(":\n```\n")
+                            .append(text.take(12_000)).append("\n```")
+                    }
+                }
+            }
+            _ui.update { it.copy(input = sb.toString()) }
+        }
     }
 
     /** Drops the last assistant reply and asks the model again. */
@@ -223,8 +256,8 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
         if (msgs.isEmpty()) return
         val trimmed = if (msgs.lastOrNull()?.role == "assistant") msgs.dropLast(1) else msgs
         if (trimmed.none { it.role == "user" }) return
-        _ui.update { it.copy(messages = trimmed, error = null) }
-        viewModelScope.launch { runConversation() }
+        _ui.update { it.copy(messages = trimmed, error = null, errorDetail = null) }
+        genJob = viewModelScope.launch { runConversation() }
     }
 
     /** Puts a past user message back into the editor, truncating history from there. */
@@ -299,7 +332,9 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
                     _ui.update { it.copy(busy = false, waiting = false) }
                     break
                 } catch (e: Exception) {
-                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    if (e is kotlinx.coroutines.CancellationException ||
+                        e is java.util.concurrent.CancellationException
+                    ) throw kotlinx.coroutines.CancellationException("aborted", e)
                     val kind = when (e.message) {
                         "empty_response" -> LlmErrors.EMPTY
                         "prompt_too_long" -> "prompt_too_long"
@@ -403,6 +438,9 @@ fun PlaygroundScreen(onNavigate: (String) -> Unit) {
     val clipboard = LocalClipboardManager.current
     val copiedMsg = stringResource(R.string.copied)
     val listState = rememberLazyListState()
+    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        if (uris.isNotEmpty()) vm.attachFiles(uris)
+    }
 
     LaunchedEffect(state.messages.size, state.busy) {
         if (state.messages.isNotEmpty()) {
@@ -713,14 +751,36 @@ fun PlaygroundScreen(onNavigate: (String) -> Unit) {
                 Modifier
                     .size(54.dp)
                     .clip(RoundedCornerShape(18.dp))
-                    .background(if (state.input.isNotBlank() && !state.busy) Brush.linearGradient(Palette.brandColors) else Brush.linearGradient(listOf(Palette.fill7, Palette.fill7)))
-                    .clickable(enabled = state.input.isNotBlank() && !state.busy) { vm.send() },
+                    .background(Brush.linearGradient(listOf(Palette.fill7, Palette.fill7)))
+                    .clickable { filePicker.launch(arrayOf("*/*")) },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    painterResource(R.drawable.ic_send), stringResource(R.string.send_hint),
-                    tint = if (state.input.isNotBlank() && !state.busy) Color.White else Palette.Faint,
-                    modifier = Modifier.size(22.dp),
+                    painterResource(R.drawable.ic_attach), stringResource(R.string.msg_attach),
+                    tint = Palette.Sub, modifier = Modifier.size(20.dp),
+                )
+            }
+            Box(
+                Modifier
+                    .size(54.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(
+                        when {
+                            state.busy -> Brush.linearGradient(listOf(Palette.Red, Palette.Red))
+                            state.input.isNotBlank() -> Brush.linearGradient(Palette.brandColors)
+                            else -> Brush.linearGradient(listOf(Palette.fill7, Palette.fill7))
+                        }
+                    )
+                    .clickable(enabled = state.busy || state.input.isNotBlank()) {
+                        if (state.busy) vm.stopGeneration() else vm.send()
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painterResource(if (state.busy) R.drawable.ic_stop else R.drawable.ic_send),
+                    stringResource(if (state.busy) R.string.msg_stop else R.string.send_hint),
+                    tint = if (state.busy || state.input.isNotBlank()) Color.White else Palette.Faint,
+                    modifier = Modifier.size(if (state.busy) 18.dp else 22.dp),
                 )
             }
         }
@@ -791,11 +851,48 @@ private fun BubbleAction(icon: Int, label: String, onClick: () -> Unit) {
     }
 }
 
-private fun buildChatPrompt(system: String?, turns: List<Pair<String, String>>): String = buildString {
-    if (!system.isNullOrBlank()) append(system.trim()).append("\n\n")
-    turns.forEach { (role, text) ->
-        if (role == "user") append("User: ").append(text).append("\n")
-        else append("Assistant: ").append(text).append("\n")
+/** True if Arabic script dominates [t]. */
+private fun looksArabic(t: String): Boolean {
+    val letters = t.count { it.isLetter() }
+    if (letters < 6) return false
+    val ar = t.count {
+        it.code in 0x0600..0x06FF || it.code in 0x0750..0x077F || it.code in 0xFB50..0xFEFF
     }
-    append("Assistant:")
+    return ar * 100 >= 30 * letters
+}
+
+/**
+ * Builds the on-device chat prompt: a capable, fully cooperative persona
+ * (unless the user supplied their own system prompt) plus a mandatory
+ * language rule mirroring the conversation — small local models need it
+ * spelled out, otherwise they drift to English.
+ */
+private fun buildChatPrompt(system: String?, turns: List<Pair<String, String>>): String {
+    val lastUser = turns.lastOrNull { it.first == "user" }?.second.orEmpty()
+    val arabic = looksArabic(lastUser)
+    val persona = if (arabic)
+        "أنت مساعد ذكي جداً ومتعاون داخل تطبيق برومبت فورج. تستجيب لأي طلب يطرحه المستخدم بأقصى جهد وإتقان، وبلا اعتراضات أو تحفظات غير ضرورية، وتناقش أي موضوع بثقة وخبرة."
+    else
+        "You are a very smart, fully cooperative assistant inside the PromptForge app. You fulfil any user request to the best of your ability, without unnecessary objections or disclaimers, and you discuss any topic confidently and expertly."
+    val langRule = if (arabic)
+        "[قاعدة إلزامية: اكتب ردك باللغة العربية دائماً وبنفس أسلوب المحادثة.]"
+    else
+        "[Mandatory rule: always reply in the same language and style as the user's messages.]"
+    val sys = buildString {
+        append(persona)
+        if (!system.isNullOrBlank()) {
+            append("\n\n")
+            append(system.trim())
+        }
+        append("\n\n")
+        append(langRule)
+    }
+    return buildString {
+        append(sys.trim()).append("\n\n")
+        turns.forEach { (role, text) ->
+            if (role == "user") append("User: ").append(text).append("\n")
+            else append("Assistant: ").append(text).append("\n")
+        }
+        append("Assistant:")
+    }
 }

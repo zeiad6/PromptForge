@@ -209,7 +209,9 @@
     <string name="copy_command">Copy command</string>
     <string name="msg_edit">Edit &amp; resend</string>
     <string name="msg_regenerate">Regenerate</string>
-    <string name="msg_copy">Copy message</string>
+    <string name="msg_attach">Attach file</string>
+    <string name="msg_stop">Stop</string>
+<string name="msg_copy">Copy message</string>
 
     <!-- Local models management -->
     <string name="local_mgmt_title">Local model manager</string>

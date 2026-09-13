@@ -209,7 +209,9 @@
     <string name="copy_command">نسخ الأمر</string>
     <string name="msg_edit">تعديل وإعادة إرسال</string>
     <string name="msg_regenerate">إعادة التوليد</string>
-    <string name="msg_copy">نسخ الرسالة</string>
+    <string name="msg_attach">إرفاق ملف</string>
+    <string name="msg_stop">إيقاف</string>
+<string name="msg_copy">نسخ الرسالة</string>
 
     <!-- Local models management -->
     <string name="local_mgmt_title">إدارة الموديلات المحلية</string>

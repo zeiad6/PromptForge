@@ -33,6 +33,17 @@ class DeviceLlmEngine(private val context: Context) {
     private var hot: Pair<String, LlmInference>? = null
     private var ltlmHot: Pair<String, LtEngine>? = null
 
+    @Volatile
+    private var mpFuture: java.util.concurrent.Future<String>? = null
+
+    /** User pressed stop: kills the active MediaPipe generation. LiteRT-LM
+     * streams cancel through the calling coroutine. */
+    fun abort() {
+        synchronized(this) {
+            runCatching { mpFuture?.cancel(true) }
+        }
+    }
+
     fun unload() {
         synchronized(this) {
             hot?.second?.close()
@@ -189,6 +200,7 @@ class DeviceLlmEngine(private val context: Context) {
         } catch (e: Throwable) {
             throw java.io.IOException(e.message ?: "load_failed", e)
         }
+        mpFuture = future
         try {
             val finalText = future.get(15, java.util.concurrent.TimeUnit.MINUTES)
             return finalText.trim().ifEmpty { throw IllegalStateException("empty_response") }
@@ -206,8 +218,12 @@ class DeviceLlmEngine(private val context: Context) {
         } catch (e: java.io.IOException) {
             throw e
         } catch (e: Exception) {
-            if (e is kotlinx.coroutines.CancellationException) throw e
+            if (e is kotlinx.coroutines.CancellationException ||
+                e is java.util.concurrent.CancellationException
+            ) throw kotlinx.coroutines.CancellationException("aborted", e)
             throw e
+        } finally {
+            mpFuture = null
         }
     }
 
