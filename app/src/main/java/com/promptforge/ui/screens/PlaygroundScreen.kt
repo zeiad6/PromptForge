@@ -87,6 +87,8 @@ data class PlaygroundUiState(
     val busy: Boolean = false,
     val waiting: Boolean = false,
     val error: String? = null,
+    /** Raw technical detail for the error strip (helps diagnose device issues). */
+    val errorDetail: String? = null,
     val systemPrompt: String? = null,
     val systemTitle: String? = null,
     val systemPromptId: String? = null,
@@ -151,7 +153,7 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
     /** Mirrors imported on-device models into the picker. */
     fun syncDeviceModels() {
         if (_ui.value.provider != com.promptforge.data.Provider.DEVICE) return
-        val names = c.deviceRegistry.all().map { it.name }
+        val names = c.deviceRegistry.all().map { it.displayName() }
         if (names.isNotEmpty()) {
             _ui.update { st ->
                 st.copy(models = names, model = if (st.model in names) st.model else names.first(), hasKey = true)
@@ -233,8 +235,21 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
         _ui.update { it.copy(messages = msgs.take(index), input = msgs[index].text, error = null) }
     }
 
+    /** Streams one on-device answer into the last assistant bubble. */
+    private suspend fun streamDeviceAnswer(dm: com.promptforge.data.DeviceModel, prompt: String) {
+        c.deviceEngine.chat(dm, prompt, _ui.value.temperature) { partial ->
+            _ui.update { st ->
+                val msgs = st.messages.toMutableList()
+                if (msgs.isNotEmpty() && msgs.last().role == "assistant") {
+                    msgs[msgs.lastIndex] = ChatMsg("assistant", partial)
+                } else msgs.add(ChatMsg("assistant", partial))
+                st.copy(messages = msgs)
+            }
+        }
+    }
+
     private suspend fun runConversation() {
-        _ui.update { it.copy(busy = true, waiting = false, error = null) }
+        _ui.update { it.copy(busy = true, waiting = false, error = null, errorDetail = null) }
         var rateRetries = 0
         var retriedModel = false
         var switchedProvider = false
@@ -251,31 +266,49 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
             // ── On-device: stream locally, no network at all ──
             if (settings.provider == com.promptforge.data.Provider.DEVICE) {
                 val registry = c.deviceRegistry.all()
-                val dm = registry.firstOrNull { it.name == _ui.value.model } ?: registry.firstOrNull()
+                val dm = registry.firstOrNull {
+                    it.name == _ui.value.model || it.displayName() == _ui.value.model
+                } ?: registry.firstOrNull()
                 if (dm == null) {
                     _ui.update { it.copy(busy = false, waiting = false, error = "no_device_model") }
                     break
                 }
-                _ui.update { it.copy(model = dm.name, models = registry.map { m -> m.name }) }
+                _ui.update { it.copy(model = dm.displayName(), models = registry.map { m -> m.displayName() }) }
                 com.promptforge.DownloadService.startInference(
                     c.appContext, c.appContext.getString(com.promptforge.R.string.service_inference),
                 )
                 try {
-                    val prompt = buildChatPrompt(_ui.value.systemPrompt, _ui.value.messages.map { it.role to it.text })
-                    c.deviceEngine.chat(dm.path, prompt, _ui.value.temperature, 1024) { partial ->
-                        _ui.update { st ->
-                            val msgs = st.messages.toMutableList()
-                            if (msgs.isNotEmpty() && msgs.last().role == "assistant") {
-                                msgs[msgs.lastIndex] = ChatMsg("assistant", partial)
-                            } else msgs.add(ChatMsg("assistant", partial))
-                            st.copy(messages = msgs)
-                        }
+                    // Keep the prompt within small on-device context budgets:
+                    // full system + the last few turns; on overflow, retry with
+                    // the system prompt + the final user message only.
+                    var prompt = buildChatPrompt(
+                        _ui.value.systemPrompt,
+                        _ui.value.messages.takeLast(6).map { it.role to it.text },
+                    )
+                    try {
+                        streamDeviceAnswer(dm, prompt)
+                    } catch (e: Exception) {
+                        if (e.message == "prompt_too_long" && _ui.value.messages.isNotEmpty()) {
+                            prompt = buildChatPrompt(
+                                _ui.value.systemPrompt,
+                                listOfNotNull(_ui.value.messages.lastOrNull()).map { it.role to it.text },
+                            )
+                            streamDeviceAnswer(dm, prompt)
+                        } else throw e
                     }
                     _ui.update { it.copy(busy = false, waiting = false) }
                     break
                 } catch (e: Exception) {
-                    val kind = if (e.message == "empty_response") LlmErrors.EMPTY else LlmErrors.OTHER
-                    _ui.update { it.copy(busy = false, waiting = false, error = kind) }
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    val kind = when (e.message) {
+                        "empty_response" -> LlmErrors.EMPTY
+                        "prompt_too_long" -> "prompt_too_long"
+                        "generation_timeout" -> LlmErrors.NETWORK
+                        else -> LlmErrors.OTHER
+                    }
+                    _ui.update {
+                        it.copy(busy = false, waiting = false, error = kind, errorDetail = e.message?.take(160))
+                    }
                     break
                 } finally {
                     com.promptforge.DownloadService.stopInference(c.appContext)
@@ -621,11 +654,22 @@ fun PlaygroundScreen(onNavigate: (String) -> Unit) {
                     LlmErrors.BAD -> stringResource(R.string.err_bad_request)
                     LlmErrors.NETWORK -> stringResource(R.string.err_network)
                     LlmErrors.EMPTY -> stringResource(R.string.err_empty)
+                    "prompt_too_long" -> stringResource(R.string.err_prompt_long)
                     else -> stringResource(R.string.err_other)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = Palette.Red,
             )
+            state.errorDetail?.let { d ->
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    d,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontFamily = FontFamily.Monospace,
+                    color = Palette.Faint,
+                    maxLines = 3,
+                )
+            }
         }
 
         // ── Input ──

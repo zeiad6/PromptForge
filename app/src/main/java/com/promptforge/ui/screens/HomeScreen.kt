@@ -216,6 +216,17 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
                     Modifier.weight(1f),
                 ) { onNavigate(Routes.SETTINGS) }
             }
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                QuickAction(
+                    stringResource(R.string.scanner_title), R.drawable.ic_target,
+                    Modifier.weight(1f),
+                ) { onNavigate(Routes.APPSCANNER) }
+                QuickAction(
+                    stringResource(R.string.quick_templates), R.drawable.ic_nav_templates,
+                    Modifier.weight(1f),
+                ) { onNavigate(Routes.TEMPLATES) }
+            }
         }
 
         Spacer(Modifier.height(20.dp))

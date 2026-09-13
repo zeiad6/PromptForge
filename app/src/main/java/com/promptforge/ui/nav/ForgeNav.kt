@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.promptforge.AppContainer
 import com.promptforge.R
 import com.promptforge.ui.components.AuroraBackground
+import com.promptforge.ui.screens.AppScannerScreen
 import com.promptforge.ui.screens.BuilderScreen
 import com.promptforge.ui.screens.HomeScreen
 import com.promptforge.ui.screens.LibraryScreen
@@ -68,6 +69,7 @@ object Routes {
     const val LIBRARY = "library"
     const val SETTINGS = "settings"
     const val LOCALMODELS = "localmodels"
+    const val APPSCANNER = "appscanner"
 }
 
 private data class BarItem(val route: String, val icon: Int, val label: Int)
@@ -111,10 +113,11 @@ fun ForgeRootApp() {
                 composable(Routes.LIBRARY) { LibraryScreen(onNavigate = { nav.navigateSingleTop(it) }) }
                 composable(Routes.SETTINGS) { SettingsScreen(onBack = { nav.popBackStack() }, onNavigate = { nav.navigateSingleTop(it) }) }
                 composable(Routes.LOCALMODELS) { LocalModelsScreen(onBack = { nav.popBackStack() }) }
+                composable(Routes.APPSCANNER) { AppScannerScreen(onNavigate = { nav.navigateSingleTop(it) }) }
             }
 
             AnimatedVisibility(
-                visible = currentRoute != Routes.LOCALMODELS,
+                visible = currentRoute != Routes.LOCALMODELS && currentRoute != Routes.APPSCANNER,
                 modifier = Modifier.align(Alignment.BottomCenter),
                 enter = slideInVertically(tween(250)) { it } + fadeIn(),
                 exit = slideOutVertically(tween(200)) { it } + fadeOut(),

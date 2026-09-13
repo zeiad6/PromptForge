@@ -12,7 +12,17 @@ data class DeviceModel(
     val name: String,
     val path: String,
     val sizeBytes: Long,
-)
+    /** Optional user-defined display name (rename without touching the file). */
+    val label: String? = null,
+    /** Output budget — user-tunable in the Model Editor (no hard limits). */
+    val maxTokens: Int = 2048,
+    /** Sampling diversity (top-K). */
+    val topK: Int = 40,
+    /** auto | gpu | cpu */
+    val backend: String = "auto",
+) {
+    fun displayName(): String = label?.takeIf { it.isNotBlank() } ?: name
+}
 
 /**
  * Registry of on-device model files (imported via the file picker or
@@ -64,6 +74,11 @@ class DeviceModelRegistry(context: Context, private val json: Json) {
             ?: throw IOException("cannot_open_uri")
         input.use { i -> dest.outputStream().use { i.copyTo(it) } }
         return adopt(dest, dest.name)
+    }
+
+    /** Persists user edits (rename / maxTokens / topK / backend). */
+    fun update(model: DeviceModel) {
+        save(all().filter { it.name != model.name } + model)
     }
 
     fun remove(name: String) {

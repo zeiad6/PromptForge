@@ -77,12 +77,14 @@ import com.promptforge.ui.components.GhostButton
 import com.promptforge.ui.components.GlassCard
 import com.promptforge.ui.components.LoadingDots
 import com.promptforge.ui.components.OptionPill
+import androidx.compose.foundation.layout.fillMaxHeight
 import com.promptforge.ui.components.SectionHeader
 import com.promptforge.ui.nav.LocalAppContainer
 import com.promptforge.util.LangPrefs
 import com.promptforge.ui.theme.Palette
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.compose.ui.window.Dialog
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -196,6 +198,12 @@ class SettingsViewModel(private val c: AppContainer) : ViewModel() {
     }
 
     fun pauseDeviceDownload(id: String) = c.deviceDownloader.pause(id)
+
+    /** Persists Model-Editor changes (rename / maxTokens / topK / backend). */
+    fun updateDeviceModel(m: DeviceModel) = viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        runCatching { c.deviceRegistry.update(m) }
+        refreshDeviceModels()
+    }
 
     /** Last uncaught stack trace (if any) — for the About card crash viewer. */
     fun crashLog(cb: (String?) -> Unit) = viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
@@ -399,6 +407,7 @@ fun SettingsScreen(onBack: () -> Unit, onNavigate: (String) -> Unit = {}) {
                     vm.downloadDeviceModel(it)
                 },
                 onPause = { vm.pauseDeviceDownload(it) },
+                onUpdate = { vm.updateDeviceModel(it) },
             )
         } else {
         // ── API key manager (bound to the selected provider) ──
@@ -888,9 +897,18 @@ private fun DeviceModelsCard(
     onDelete: (String) -> Unit,
     onDownload: (DeviceDownloadSpec) -> Unit,
     onPause: (String) -> Unit,
+    onUpdate: (DeviceModel) -> Unit,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val clipboard = LocalClipboardManager.current
+    var editing by remember { mutableStateOf<DeviceModel?>(null) }
+    editing?.let { m ->
+        ModelEditorDialog(
+            model = m,
+            onSave = { editing = null; onUpdate(it) },
+            onDismiss = { editing = null },
+        )
+    }
 
     GlassCard(Modifier.fillMaxWidth()) {
         SectionHeader(stringResource(R.string.device_section), painterResource(R.drawable.ic_bot))
@@ -906,17 +924,22 @@ private fun DeviceModelsCard(
         if (models.isEmpty()) {
             Text(stringResource(R.string.device_none), style = MaterialTheme.typography.bodySmall, color = Palette.Faint)
         } else {
+            Text(stringResource(R.string.editor_hint), style = MaterialTheme.typography.labelSmall, color = Palette.Faint)
+            Spacer(Modifier.height(4.dp))
             models.forEach { m ->
                 Row(
-                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                        .clickable { editing = m }
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(painterResource(R.drawable.ic_check), null, tint = Palette.Mint, modifier = Modifier.size(15.dp))
                     Spacer(Modifier.width(8.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(m.name, style = MaterialTheme.typography.titleSmall, color = Palette.Ink, maxLines = 1)
+                        Text(m.displayName(), style = MaterialTheme.typography.titleSmall, color = Palette.Ink, maxLines = 1)
                         Text(
-                            String.format(java.util.Locale.US, "%.2f GB", m.sizeBytes / 1_000_000_000.0),
+                            String.format(java.util.Locale.US, "%.2f GB · %d tok · %s",
+                                m.sizeBytes / 1_000_000_000.0, m.maxTokens, m.backend),
                             style = MaterialTheme.typography.labelSmall,
                             color = Palette.Cyan,
                         )
@@ -1038,6 +1061,97 @@ private fun DeviceModelsCard(
                             runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         },
                 )
+            }
+        }
+    }
+}
+
+/**
+ * Model Editor: rename an on-device model and tune its engine limits —
+ * max output tokens, top-K and backend. No hard caps anywhere.
+ */
+@Composable
+private fun ModelEditorDialog(
+    model: DeviceModel,
+    onSave: (DeviceModel) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var label by remember { mutableStateOf(model.label.orEmpty()) }
+    var maxTokens by remember { mutableStateOf(model.maxTokens) }
+    var topK by remember { mutableStateOf(model.topK) }
+    var backend by remember { mutableStateOf(model.backend) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        GlassCard(Modifier.fillMaxWidth()) {
+            SectionHeader(stringResource(R.string.editor_title), painterResource(R.drawable.ic_bot))
+            Text(
+                model.name,
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = FontFamily.Monospace,
+                color = Palette.Faint,
+                maxLines = 1,
+            )
+            Spacer(Modifier.height(10.dp))
+
+            Text(stringResource(R.string.editor_label), style = MaterialTheme.typography.labelMedium, color = Palette.Sub)
+            Spacer(Modifier.height(4.dp))
+            OutlinedTextField(
+                value = label,
+                onValueChange = { label = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(model.name, color = Palette.Faint, style = MaterialTheme.typography.bodySmall) },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+            )
+
+            Spacer(Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.editor_tokens), style = MaterialTheme.typography.labelMedium, color = Palette.Sub, modifier = Modifier.weight(1f))
+                Text("$maxTokens", style = MaterialTheme.typography.labelMedium, color = Palette.Cyan, fontFamily = FontFamily.Monospace)
+            }
+            Slider(
+                value = maxTokens.toFloat(),
+                onValueChange = { maxTokens = (it / 256).toInt() * 256 },
+                valueRange = 256f..8192f,
+                colors = SliderDefaults.colors(thumbColor = Palette.Cyan, activeTrackColor = Palette.Primary, inactiveTrackColor = Palette.hair1),
+            )
+
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.editor_topk), style = MaterialTheme.typography.labelMedium, color = Palette.Sub, modifier = Modifier.weight(1f))
+                Text("$topK", style = MaterialTheme.typography.labelMedium, color = Palette.Cyan, fontFamily = FontFamily.Monospace)
+            }
+            Slider(
+                value = topK.toFloat(),
+                onValueChange = { topK = it.toInt().coerceIn(1, 64) },
+                valueRange = 1f..64f,
+                colors = SliderDefaults.colors(thumbColor = Palette.Mint, activeTrackColor = Palette.Primary, inactiveTrackColor = Palette.hair1),
+            )
+
+            Spacer(Modifier.height(8.dp))
+            Text(stringResource(R.string.editor_backend), style = MaterialTheme.typography.labelMedium, color = Palette.Sub)
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(
+                    stringResource(R.string.be_auto) to "auto",
+                    stringResource(R.string.be_gpu) to "gpu",
+                    stringResource(R.string.be_cpu) to "cpu",
+                ).forEach { (lbl, v) ->
+                    OptionPill(text = lbl, selected = backend == v, modifier = Modifier.weight(1f)) { backend = v }
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                GhostButton(
+                    text = stringResource(R.string.editor_cancel),
+                    modifier = Modifier.weight(1f),
+                    tint = Palette.Sub,
+                ) { onDismiss() }
+                BrandButton(
+                    text = stringResource(R.string.editor_save),
+                    modifier = Modifier.weight(1f),
+                ) { onSave(model.copy(label = label.trim().ifEmpty { null }, maxTokens = maxTokens, topK = topK, backend = backend)) }
             }
         }
     }

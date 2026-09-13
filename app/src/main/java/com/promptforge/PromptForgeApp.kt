@@ -73,7 +73,8 @@ class AppContainer(app: Application) {
     ): String {
         if (settings.provider == Provider.DEVICE) {
             val registry = deviceRegistry.all()
-            val model = registry.firstOrNull { it.name == settings.modelFor(Provider.DEVICE) }
+            val wanted = settings.modelFor(Provider.DEVICE)
+            val model = registry.firstOrNull { it.name == wanted || it.displayName() == wanted }
                 ?: registry.firstOrNull()
                 ?: throw IllegalArgumentException("no_device_model")
             val prompt = buildString {
@@ -85,7 +86,7 @@ class AppContainer(app: Application) {
                 appContext.getString(com.promptforge.R.string.service_inference),
             )
             try {
-                return deviceEngine.chat(model.path, prompt, temperature.toFloat(), 2048)
+                return deviceEngine.chat(model, prompt, temperature.toFloat())
             } finally {
                 DownloadService.stopInference(appContext)
             }
