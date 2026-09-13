@@ -1,50 +1,150 @@
 package com.promptforge.data
 
 import android.content.Context
+import com.google.ai.edge.litertlm.Backend as LtBackend
+import com.google.ai.edge.litertlm.ConversationConfig as LtConvConfig
+import com.google.ai.edge.litertlm.Engine as LtEngine
+import com.google.ai.edge.litertlm.EngineConfig as LtEngineConfig
+import com.google.ai.edge.litertlm.SamplerConfig as LtSamplerConfig
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 /**
- * Runs LLMs fully on-device via Google AI Edge (MediaPipe GenAI).
- * One hot instance at a time (they're memory-hungry).
+ * Dual-engine on-device runner:
+ *  - `.task` / `.bin` bundles → MediaPipe LLM Inference (tasks-genai)
+ *  - `.litertlm` containers   → LiteRT-LM (com.google.ai.edge.litertlm)
  *
- * Self-healing: if GPU load or generation fails, it transparently reloads on
- * CPU and retries once; if the prompt exceeds the model context, it throws a
- * distinct [java.io.IOException] with message "prompt_too_long" so callers
- * can trim the conversation and retry.
+ * Loading a .litertlm in MediaPipe fails with "SentencePiece tokenizer is not
+ * found" — dispatching by file extension is the fix used by Google's own
+ * AI Edge Gallery app.
+ *
+ * Both engines are self-healing: GPU failures fall back to CPU with one
+ * automatic retry; MediaPipe prompts that exceed the model context throw a
+ * distinct "prompt_too_long" so callers can trim and retry.
  */
 class DeviceLlmEngine(private val context: Context) {
 
     private val mutex = Mutex()
     private var hot: Pair<String, LlmInference>? = null
+    private var ltlmHot: Pair<String, LtEngine>? = null
 
     fun unload() {
         synchronized(this) {
             hot?.second?.close()
             hot = null
+            closeLtlm()
         }
     }
 
-    private fun keyOf(m: DeviceModel) = "path|${'$'}{m.maxTokens}|${'$'}{m.topK}|${'$'}{m.backend}"
-
-    /**
-     * Streams a completion for [prompt] using the model's own tuned settings.
-     * [onPartial] receives the accumulated text so far; the final full text
-     * is returned.
-     */
     suspend fun chat(
         model: DeviceModel,
         prompt: String,
         temperature: Float = 0.7f,
         onPartial: (String) -> Unit = {},
     ): String = withContext(Dispatchers.Default) {
-        mutex.withLock {
-            generateWithRecovery(model, prompt, onPartial, allowRetry = true)
+        if (model.path.endsWith(".litertlm")) {
+            chatLitertlm(model, prompt, temperature, onPartial)
+        } else {
+            mutex.withLock { generateWithRecovery(model, prompt, onPartial, allowRetry = true) }
         }
     }
+
+    // ───────────────────────── LiteRT-LM (.litertlm) ─────────────────────────
+
+    private suspend fun chatLitertlm(
+        model: DeviceModel,
+        prompt: String,
+        temperature: Float,
+        onPartial: (String) -> Unit,
+    ): String = withContext(Dispatchers.IO) {
+        var lastErr: Throwable? = null
+        var wantGpu = model.backend != "cpu"
+        repeat(2) {
+            try {
+                return@withContext runLitertlm(model, prompt, temperature, onPartial, wantGpu)
+            } catch (e: Throwable) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                lastErr = e
+                if (e.message == "prompt_too_long" || e.message == "empty_response") throw e
+                wantGpu = false // next attempt: fresh CPU engine
+                closeLtlm()
+            }
+        }
+        throw lastErr ?: java.io.IOException("generation_failed")
+    }
+
+    private suspend fun runLitertlm(
+        model: DeviceModel,
+        prompt: String,
+        temperature: Float,
+        onPartial: (String) -> Unit,
+        wantGpu: Boolean,
+    ): String {
+        val engine = ensureLtlm(model, wantGpu)
+        val conv = engine.createConversation(
+            LtConvConfig(
+                samplerConfig = LtSamplerConfig(
+                    topK = model.topK,
+                    topP = 0.95,
+                    temperature = temperature.toDouble(),
+                ),
+            )
+        )
+        try {
+            val sb = StringBuilder()
+            try {
+                withTimeout(15 * 60_000L) {
+                    conv.sendMessageAsync(prompt).collect { msg ->
+                        val t = msg.toString()
+                        if (t.isNotEmpty()) {
+                            sb.append(t)
+                            onPartial(sb.toString())
+                        }
+                    }
+                }
+            } catch (e: TimeoutCancellationException) {
+                throw java.io.IOException("generation_timeout")
+            }
+            return sb.toString().trim().ifEmpty { throw IllegalStateException("empty_response") }
+        } finally {
+            runCatching { conv.close() }
+        }
+    }
+
+    private fun ensureLtlm(model: DeviceModel, wantGpu: Boolean): LtEngine = synchronized(this) {
+        val key = model.path + "|" + if (wantGpu) "gpu" else "cpu"
+        ltlmHot?.let { (k, e) -> if (k == key) return e }
+        closeLtlm()
+
+        val cfg = LtEngineConfig(
+            modelPath = model.path,
+            backend = if (wantGpu) LtBackend.GPU() else LtBackend.CPU(),
+            cacheDir = context.cacheDir.absolutePath,
+        )
+        val e = LtEngine(cfg)
+        try {
+            e.initialize() // can take ~10s on big models
+        } catch (t: Throwable) {
+            runCatching { e.close() }
+            throw java.io.IOException("init: ${t.message}", t)
+        }
+        ltlmHot = key to e
+        e
+    }
+
+    private fun closeLtlm() = synchronized(this) {
+        ltlmHot?.second?.let { runCatching { it.close() } }
+        ltlmHot = null
+    }
+
+    // ─────────────────────── MediaPipe (.task / .bin) ───────────────────────
+
+    private fun keyOf(m: DeviceModel) = "path|${m.maxTokens}|${m.topK}|${m.backend}"
 
     private fun generateWithRecovery(
         model: DeviceModel,
@@ -125,8 +225,6 @@ class DeviceLlmEngine(private val context: Context) {
                 .setPreferredBackend(backend)
                 .build()
 
-        // auto/gpu → try GPU first; cpu → CPU directly. The caller's
-        // recovery path retries on CPU if GPU is impossible.
         if (model.backend == "cpu") {
             return synchronized(this) {
                 LlmInference.createFromOptions(context, options(LlmInference.Backend.CPU))

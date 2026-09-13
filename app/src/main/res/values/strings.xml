@@ -268,6 +268,10 @@
     <string name="service_inference_body">On-device generation in progress — you can switch apps</string>
     <string name="notif_channel_downloads">Model downloads</string>
     <string name="notif_channel_inference">On-device tasks</string>
+<string name="hero_title">Your AI assistant</string>
+    <string name="hero_sub">Live chat — fully on-device offline, or via 6 cloud providers. Tap to start.</string>
+    <string name="hero_cta">Start chatting</string>
+    <string name="hero_scanner_cta">Scan an app</string>
 <string name="scanner_title">App Scanner</string>
     <string name="scanner_desc">Deep privacy &amp; security analysis of any installed app — facts extracted locally, judged by your phone\'s own AI</string>
     <string name="scanner_device_hint">Pick any app to get a deep, comprehensive report. Analysis runs on your device model when available, cloud otherwise.</string>

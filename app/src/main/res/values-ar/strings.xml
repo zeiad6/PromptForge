@@ -268,6 +268,10 @@
     <string name="service_inference_body">توليد على الجهاز قيد التنفيذ — يمكنك الانتقال لتطبيق آخر</string>
     <string name="notif_channel_downloads">تنزيلات الموديلات</string>
     <string name="notif_channel_inference">مهام على الجهاز</string>
+<string name="hero_title">مساعدك الذكي</string>
+    <string name="hero_sub">محادثة مباشرة — على جهازك بلا إنترنت أو عبر 6 مزودين سحابيين. اضغط للبدء.</string>
+    <string name="hero_cta">ابدأ محادثة</string>
+    <string name="hero_scanner_cta">افحص تطبيقاً</string>
 <string name="scanner_title">فاحص التطبيقات</string>
     <string name="scanner_desc">تحليل عميق للخصوصية والأمان لأي تطبيق مثبّت — الحقائق تُستخرج محلياً، والحكم من ذكاء هاتفك نفسه</string>
     <string name="scanner_device_hint">اختر أي تطبيق لتحصل على تقرير عميق وشامل. يعمل التحليل على موديل جهازك إن توفر، وإلا فسحابياً.</string>

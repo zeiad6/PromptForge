@@ -139,6 +139,58 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
             }
         }
 
+        // ── AI assistant hero — the front door of the app ──
+        val heroShape = RoundedCornerShape(24.dp)
+        Box(
+            Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .shadow(20.dp, heroShape, ambientColor = Palette.shadowColor, spotColor = Palette.shadowColor)
+                .clip(heroShape)
+                .background(Brush.linearGradient(Palette.brandColors))
+                .clickable { onNavigate(Routes.PLAYGROUND) }
+                .padding(18.dp)
+        ) {
+            Column {
+                Text(
+                    stringResource(R.string.hero_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    stringResource(R.string.hero_sub),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.92f),
+                )
+                Spacer(Modifier.height(14.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.hero_cta),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Palette.Ink,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.White)
+                            .padding(horizontal = 18.dp, vertical = 9.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.hero_scanner_cta),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.White.copy(alpha = 0.18f))
+                            .clickable { onNavigate(Routes.APPSCANNER) }
+                            .padding(horizontal = 16.dp, vertical = 9.dp),
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+
         // ── Tip of the day ──
         GlassCard(
             Modifier
