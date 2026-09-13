@@ -15,8 +15,8 @@ android {
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
         minSdk = 26
         targetSdk = 36
-        versionCode = 15
-        versionName = "2.0.0"
+        versionCode = 16
+        versionName = "2.1.0"
         vectorDrawables { useSupportLibrary = true }
     }
 
@@ -75,4 +75,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.mediapipe.tasks.genai)
     implementation(libs.litertlm.android)
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 }

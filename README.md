@@ -48,13 +48,21 @@ studio** (builder, templates, scoring, library) as a dedicated section.
 | 🛒 **Built-in model store** | One-tap downloads (SmolLM2 135M · OLMo 2 1B · Qwen2.5 1.5B) with **status-bar progress, pause/resume, auto-resume, true background operation** |
 | 🛠️ **Model editor** | Rename installed models, tune max tokens (up to 8192), top-K, GPU/CPU — **no artificial limits** |
 | 🔍 **App Scanner** | Facts extracted locally → your phone's AI writes a **deep audit report** with a 0–100 trust score |
-| 🧪 **Lab** | Live streaming chat with any provider or on-device model; edit & resend, regenerate |
+| 🧪 **Lab** | Live streaming chat with any provider or on-device model; edit & resend, regenerate, stop, file attachments |
+| 🧱 **App Builder** | Describe an app → the AI **builds it** (Android/Compose, desktop-ready, or a self-contained web app) → **live preview & test inside the app**, then export |
+| 🧩 **Extensions** | **Skills** (translation, code, math, CV, research…) + **MCP servers** (Model Context Protocol tools) + **Smart Tools** that auto-apply to any task — even unasked |
+| 📄 **Documents** | Open PDF / DOCX / MD / TXT from your phone: read, edit, **AI-summarize**, convert Markdown→HTML — mostly fully offline |
+| 🏷️ **Model capabilities** | Every model shows what it can do: 📝 text · 💻 code · 🧠 reasoning · ⚡ fast |
 | ✍️ **Prompt studio** | AI enhance, research pack with citations, **creativity-boost directives**, unlimited execution, live 0–100 scoring |
 | 🎚️ **Creativity dial** | Temperature 0 → 1.5, presets **Precise / Balanced / Creative / Wild** |
 | ☁️ **6 cloud providers** | Gemini · Groq · OpenRouter · Mistral · Cerebras · Ollama (LAN) — graceful 429 handling, auto model switching |
 | 🔔 **Background work** | Foreground service + wake locks: downloads and inference survive app switching |
 | 🌍 **Bilingual** | Full Arabic/English UI, instant switch, system-language detection |
 | 🛡️ **Private by design** | No accounts, no analytics, no tracking — keys and models stay on the device |
+
+> **About "Arena" models:** LMArena does not publish a public API for its models
+> (verified), so PromptForge's agent features run on **your own models + real local
+> tools** (skills, MCP, file & app tooling) — the same agentic pattern, fully private.
 
 ### 📲 Install
 
@@ -85,7 +93,7 @@ echo "sdk.dir=/path/to/android-sdk" > local.properties
 ### 🏗️ Tech stack
 
 Kotlin 2.x · Jetpack Compose Material 3 · MediaPipe tasks-genai 0.10.35 ·
-LiteRT-LM 0.10.0 · DataStore · OkHttp/Retrofit · Coroutines & StateFlow ·
+LiteRT-LM 0.10.0 · PDFBox-Android · WebView · DataStore · OkHttp/Retrofit · Coroutines & StateFlow ·
 IBM Plex Sans Arabic (OFL)
 
 ---
@@ -107,13 +115,21 @@ IBM Plex Sans Arabic (OFL)
 | 🛒 **متجر موديلات مدمج** | تنزيل بنقرة (سمول إل‌إم 135M · أولمو 2 1B · كوين 2.5 1.5B) مع **إشعار تقدم، إيقاف/استكمال، استكمال تلقائي، وعمل حقيقي في الخلفية** |
 | 🛠️ **محرر الموديلات** | إعادة تسمية، ضبط الحد الأقصى للمخرجات (حتى 8192)، top-K، محرك GPU/CPU — **بلا قيود اصطناعية** |
 | 🔍 **فاحص التطبيقات** | الحقائق تُستخرج محلياً ← ذكاء هاتفك يكتب **تقرير تدقيق عميقاً** بدرجة ثقة من 100 |
-| 🧪 **المختبر** | محادثة حية متدفقة مع أي مزوّد أو موديل محلي؛ تحرير وإعادة إرسال، تجديد |
+| 🧪 **المختبر** | محادثة حية متدفقة مع أي مزوّد أو موديل محلي؛ تحرير وإعادة إرسال، تجديد، إيقاف، إرفاق ملفات |
+| 🧱 **باني التطبيقات** | صِف تطبيقاً ← الذكاء الاصطناعي **يبنيه** (أندرويد/Compose، جاهز لسطح المكتب، أو تطبيق ويب مكتفٍ) ← **معاينة حية وتجربة داخل التطبيق** ثم تصدير |
+| 🧩 **الإضافات** | **مهارات** (ترجمة، برمجة، حساب، سيرة ذاتية، بحث…) + **سيرفرات MCP** (أدوات بروتوكول Model Context Protocol) + **أدوات ذكية** تُطبَّق تلقائياً على أي مهمة — حتى لو لم تطلب |
+| 📄 **المستندات** | افتح PDF / DOCX / MD / TXT من هاتفك: قراءة، تحرير، **تلخيص بالذكاء**، تحويل ماركداون←HTML — معظمه أوفلاين بالكامل |
+| 🏷️ **قدرات الموديلات** | كل موديل يعرض ما يمكن أن يفعله: 📝 نص · 💻 كود · 🧠 استدلال · ⚡ سريع |
 | ✍️ **استوديو الأوامر** | تعزيز بالذكاء الاصطناعي، حزمة بحث بالتوثيق، **توجيهات الإبداع**، تنفيذ بلا حدود، تقييم لحظي 0–100 |
 | 🎚️ **مقبض الإبداع** | حرارة 0 → 1.5 مع مستويات **دقيق / متوازن / إبداعي / جامح** |
 | ☁️ **6 مزودين سحابيين** | Gemini · Groq · OpenRouter · Mistral · Cerebras · Ollama (الشبكة المحلية) |
 | 🔔 **العمل في الخلفية** | خدمة أمامية + أقفال استيقاظ: التنزيلات والاستدلال يكملان أثناء التنقل بين التطبيقات |
 | 🌍 **ثنائي اللغة** | عربي/إنجليزي كامل، تبديل فوري، كشف لغة النظام |
 | 🛡️ **خصوصية بالتصميم** | بلا حسابات أو تتبع أو تحليلات — المفاتيح والموديلات تبقى في جهازك |
+
+> **بشأن موديلات Arena:** منصة LMArena لا توفر API عاماً لموديلاتها (تم التحقق)،
+> لذلك تعمل ميزات الوكيل في برومبت فورج على **موديلاتك أنت + أدوات محلية حقيقية**
+> (مهارات، MCP، أدوات ملفات وتطبيقات) — النمط الوكيلي نفسه وبخصوصية كاملة.
 
 ### 📲 التثبيت
 

@@ -21,6 +21,8 @@ data class DeviceDownloadSpec(
     val url: String,
     val fileName: String,
     val repoUrl: String,
+    /** What the model can be used for: text · code · reasoning · chat · fast. */
+    val caps: String = "text",
 )
 
 /** UI state of a single download. */
@@ -48,6 +50,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
         val CATALOG = listOf(
             DeviceDownloadSpec(
                 id = "smollm2-135m",
+                caps = "text·fast",
                 sizeBytes = 142_819_328L, // 143 MB — instant test model
                 url = "$HF/SmolLM2-135M-Instruct/resolve/main/SmolLM2_135M_Instruct.litertlm",
                 fileName = "SmolLM2_135M_Instruct.litertlm",
@@ -55,6 +58,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "olmo2-1b",
+                caps = "text·chat",
                 sizeBytes = 931_241_056L, // 931 MB — balanced
                 url = "$HF/OLMo-2-1B-Instruct/resolve/main/OLMo-2-1B-Instruct_q4_block32_ekv4096.litertlm",
                 fileName = "OLMo-2-1B-Instruct_q4_block32_ekv4096.litertlm",
@@ -62,6 +66,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "qwen25-15b",
+                caps = "text·code",
                 sizeBytes = 1_567_364_648L, // 1.57 GB — strongest
                 url = "$HF/Qwen2.5-1.5B-Instruct/resolve/main/Qwen2.5-1.5B-Instruct_seq128_q8_ekv1280.task",
                 fileName = "Qwen2.5-1.5B-Instruct_seq128_q8_ekv1280.task",
@@ -70,6 +75,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             // ── Heavy reasoning tier (all verified un-gated, direct 206) ──
             DeviceDownloadSpec(
                 id = "deepseek-r1-15b",
+                caps = "reasoning·text",
                 sizeBytes = 1_833_000_000L, // 1.83 GB — DEEP REASONING (R1 distill, <think> mode)
                 url = "$HF/DeepSeek-R1-Distill-Qwen-1.5B/resolve/main/DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
                 fileName = "DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
@@ -77,6 +83,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "lfm25-26b",
+                caps = "text·code·fast",
                 sizeBytes = 1_668_000_000L, // 1.67 GB — LiquidAI LFM2.5, very capable & efficient
                 url = "$HF/LFM2.5-2.6B/resolve/main/LFM2.5-2.6B_int4.litertlm",
                 fileName = "LFM2.5-2.6B_int4.litertlm",
@@ -84,6 +91,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "gemma4-e2b",
+                caps = "text·chat",
                 sizeBytes = 2_588_000_000L, // 2.59 GB — Google Gemma 4 E2B (flagship, multimodal-capable)
                 url = "$HF/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm",
                 fileName = "gemma-4-E2B-it.litertlm",
@@ -91,6 +99,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "qwen35-4b",
+                caps = "text·code·reasoning",
                 sizeBytes = 2_754_000_000L, // 2.75 GB — Qwen 3.5 4B, strongest generalist
                 url = "$HF/Qwen3.5-4B/resolve/main/Qwen3.5-4B_mixed_int4.litertlm",
                 fileName = "Qwen3.5-4B_mixed_int4.litertlm",
@@ -98,6 +107,7 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
             ),
             DeviceDownloadSpec(
                 id = "phi4-mini",
+                caps = "text·code·reasoning",
                 sizeBytes = 3_910_000_000L, // 3.91 GB — Microsoft Phi-4-mini 3.8B (top-tier reasoning + code)
                 url = "$HF/Phi-4-mini-instruct/resolve/main/Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.litertlm",
                 fileName = "Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.litertlm",

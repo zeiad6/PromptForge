@@ -19,6 +19,8 @@ data class AppSettings(
     val onboarded: Boolean = false,
     val theme: String = "system", // system | dark | light
     val localBaseUrl: String = "http://localhost:11434/v1/",
+    /** Smart Tools: auto-apply matching skills & MCP tools to any task. */
+    val smartTools: Boolean = true,
 ) {
     fun apiKey(p: Provider): String = keys[p].orEmpty()
 
@@ -38,6 +40,7 @@ class SettingsStore(private val context: Context) {
         val onboarded = booleanPreferencesKey("onboarded")
         val theme = stringPreferencesKey("theme")
         val localBase = stringPreferencesKey("local_base_url")
+        val smartTools = booleanPreferencesKey("smart_tools")
         fun key(p: Provider) = stringPreferencesKey("key_${p.key}")
         fun model(p: Provider) = stringPreferencesKey("model_${p.key}")
     }
@@ -55,6 +58,7 @@ class SettingsStore(private val context: Context) {
             onboarded = p[K.onboarded] ?: false,
             theme = p[K.theme] ?: "system",
             localBaseUrl = p[K.localBase] ?: "http://localhost:11434/v1/",
+            smartTools = p[K.smartTools] ?: true,
         )
     }
 
@@ -65,6 +69,7 @@ class SettingsStore(private val context: Context) {
     suspend fun setModel(p: Provider, value: String) = context.settingsDataStore.edit { it[K.model(p)] = value }
     suspend fun setTemperature(value: Float) = context.settingsDataStore.edit { it[K.temperature] = value }
     suspend fun setOnboarded(value: Boolean) = context.settingsDataStore.edit { it[K.onboarded] = value }
+    suspend fun setSmartTools(value: Boolean) = context.settingsDataStore.edit { it[K.smartTools] = value }
 
     suspend fun clearAll() = context.settingsDataStore.edit { it.clear() }
 }

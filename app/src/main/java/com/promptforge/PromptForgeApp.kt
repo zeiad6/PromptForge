@@ -6,6 +6,9 @@ import com.promptforge.data.DeviceLlmEngine
 import com.promptforge.data.DeviceModelDownloader
 import com.promptforge.data.DeviceModelRegistry
 import com.promptforge.data.LlmClient
+import com.promptforge.data.McpManager
+import com.promptforge.data.Skills
+import com.promptforge.data.looksArabicText
 import com.promptforge.data.OllamaManager
 import com.promptforge.data.PlaygroundSetup
 import com.promptforge.data.PromptRepository
@@ -17,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
@@ -52,8 +56,11 @@ class AppContainer(app: Application) {
     val playgroundHolder = MutableStateFlow<PlaygroundSetup?>(null)
 
     val vmFactory = ForgeVmFactory(this)
+    val mcp = McpManager(appContext, json)
+    val builtAppsDir: java.io.File = java.io.File(appContext.filesDir, "built_apps").apply { mkdirs() }
 
     init {
+        runCatching { com.tom_roush.pdfbox.android.PDFBoxResourceLoader.init(appContext) }
         appScope.launch {
             repository.load()
             repository.seedIfEmpty()
@@ -100,6 +107,47 @@ class AppContainer(app: Application) {
             temperature = temperature,
             maxTokens = maxTokens,
         )
+    }
+
+    /** Device-first one-shot generation used by App Builder & Documents. */
+    suspend fun smartChat(system: String, user: String, maxTokens: Int = 4096): String {
+        val s = settings.settings.first()
+        val dm = deviceRegistry.all().firstOrNull()
+        return if (dm != null) {
+            val prompt = buildString {
+                if (system.isNotBlank()) append(system.trim()).append("\n\n")
+                append(user)
+            }
+            DownloadService.startInference(
+                appContext, appContext.getString(com.promptforge.R.string.service_inference),
+            )
+            try {
+                deviceEngine.chat(dm, prompt, 0.6f)
+            } finally {
+                DownloadService.stopInference(appContext)
+            }
+        } else {
+            chatSmart(s, system, user, 0.6, maxTokens)
+        }
+    }
+
+    /** Smart Tools: auto-applies the matching skill + relevant MCP tool to a
+     *  user message, even when the user did not ask. Never throws. */
+    suspend fun smartContextFor(currentSystem: String?, userText: String): String {
+        val s = runCatching { settings.settings.first() }.getOrNull()
+        if (s != null && !s.smartTools) return currentSystem.orEmpty()
+        val sb = StringBuilder(currentSystem.orEmpty())
+        Skills.match(userText)?.let { sk ->
+            if (sb.isNotBlank()) sb.append("\n\n")
+            sb.append("[").append(if (looksArabicText(userText)) sk.ar else sk.en).append("] ")
+            sb.append(Skills.render(sk, userText))
+        }
+        val toolOut = runCatching { mcp.autoUse(userText) }.getOrNull()
+        if (!toolOut.isNullOrBlank()) {
+            if (sb.isNotBlank()) sb.append("\n\n")
+            sb.append("[MCP]\n").append(toolOut.take(3000))
+        }
+        return sb.toString()
     }
 }
 

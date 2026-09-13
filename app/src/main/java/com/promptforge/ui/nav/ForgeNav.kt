@@ -47,7 +47,10 @@ import androidx.navigation.compose.rememberNavController
 import com.promptforge.AppContainer
 import com.promptforge.R
 import com.promptforge.ui.components.AuroraBackground
+import com.promptforge.ui.screens.AppBuilderScreen
 import com.promptforge.ui.screens.AppScannerScreen
+import com.promptforge.ui.screens.DocsScreen
+import com.promptforge.ui.screens.ExtensionsScreen
 import com.promptforge.ui.screens.BuilderScreen
 import com.promptforge.ui.screens.HomeScreen
 import com.promptforge.ui.screens.LibraryScreen
@@ -70,6 +73,9 @@ object Routes {
     const val SETTINGS = "settings"
     const val LOCALMODELS = "localmodels"
     const val APPSCANNER = "appscanner"
+    const val APPBUILDER = "appbuilder"
+    const val DOCS = "docs"
+    const val EXTENSIONS = "extensions"
 }
 
 private data class BarItem(val route: String, val icon: Int, val label: Int)
@@ -114,10 +120,15 @@ fun ForgeRootApp() {
                 composable(Routes.SETTINGS) { SettingsScreen(onBack = { nav.popBackStack() }, onNavigate = { nav.navigateSingleTop(it) }) }
                 composable(Routes.LOCALMODELS) { LocalModelsScreen(onBack = { nav.popBackStack() }) }
                 composable(Routes.APPSCANNER) { AppScannerScreen(onNavigate = { nav.navigateSingleTop(it) }) }
+                composable(Routes.APPBUILDER) { AppBuilderScreen(onNavigate = { nav.navigateSingleTop(it) }) }
+                composable(Routes.DOCS) { DocsScreen(onNavigate = { nav.navigateSingleTop(it) }) }
+                composable(Routes.EXTENSIONS) { ExtensionsScreen(onNavigate = { nav.navigateSingleTop(it) }) }
             }
 
             AnimatedVisibility(
-                visible = currentRoute != Routes.LOCALMODELS && currentRoute != Routes.APPSCANNER,
+                visible = currentRoute != Routes.LOCALMODELS && currentRoute != Routes.APPSCANNER &&
+                    currentRoute != Routes.APPBUILDER && currentRoute != Routes.DOCS &&
+                    currentRoute != Routes.EXTENSIONS,
                 modifier = Modifier.align(Alignment.BottomCenter),
                 enter = slideInVertically(tween(250)) { it } + fadeIn(),
                 exit = slideOutVertically(tween(200)) { it } + fadeOut(),

@@ -275,9 +275,20 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
                     Modifier.weight(1f),
                 ) { onNavigate(Routes.APPSCANNER) }
                 QuickAction(
-                    stringResource(R.string.quick_templates), R.drawable.ic_nav_templates,
+                    stringResource(R.string.ab_title), R.drawable.ic_nav_builder,
                     Modifier.weight(1f),
-                ) { onNavigate(Routes.TEMPLATES) }
+                ) { onNavigate(Routes.APPBUILDER) }
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                QuickAction(
+                    stringResource(R.string.docs_title), R.drawable.ic_library,
+                    Modifier.weight(1f),
+                ) { onNavigate(Routes.DOCS) }
+                QuickAction(
+                    stringResource(R.string.ext_title), R.drawable.ic_layers,
+                    Modifier.weight(1f),
+                ) { onNavigate(Routes.EXTENSIONS) }
             }
         }
 

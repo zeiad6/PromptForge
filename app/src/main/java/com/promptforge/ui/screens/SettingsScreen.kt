@@ -943,6 +943,9 @@ private fun DeviceModelsCard(
                             style = MaterialTheme.typography.labelSmall,
                             color = Palette.Cyan,
                         )
+                        catalogCaps(m.name)?.let {
+                            Text(it, style = MaterialTheme.typography.labelSmall, color = Palette.Faint)
+                        }
                     }
                     Icon(
                         painterResource(R.drawable.ic_trash),
@@ -957,6 +960,7 @@ private fun DeviceModelsCard(
         }
 
         Spacer(Modifier.height(14.dp))
+        Text(stringResource(R.string.editor_caps_hint), style = MaterialTheme.typography.labelSmall, color = Palette.Faint)
         Text(stringResource(R.string.device_catalog_title), style = MaterialTheme.typography.titleSmall, color = Palette.Ink)
         Text(stringResource(R.string.device_dl_bg), style = MaterialTheme.typography.labelSmall, color = Palette.Faint)
         Spacer(Modifier.height(6.dp))
@@ -989,6 +993,11 @@ private fun DeviceModelsCard(
                         String.format(java.util.Locale.US, "%.2f GB", spec.sizeBytes / 1_000_000_000.0),
                         style = MaterialTheme.typography.labelSmall,
                         color = Palette.Faint,
+                    )
+                    Text(
+                        capsBadge(spec.caps),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Palette.Cyan,
                     )
                     if (dl != null && dl.percent in 1..99 && !installed) {
                         Spacer(Modifier.height(3.dp))
@@ -1161,3 +1170,16 @@ private fun ModelEditorDialog(
         }
     }
 }
+
+/** Emoji badge line for model capability tags (text/code/reasoning/fast/chat). */
+private fun capsBadge(caps: String): String = caps.split("·").joinToString(" ") { t ->
+    when (t.trim().lowercase()) {
+        "code" -> "💻"; "reasoning" -> "🧠"; "fast" -> "⚡"; "chat" -> "💬"; else -> "📝"
+    }
+}
+
+/** Capability badge for an installed model, matched against the catalog. */
+internal fun catalogCaps(name: String): String? =
+    DeviceModelDownloader.CATALOG.firstOrNull {
+        it.fileName.substringBeforeLast('.') == name
+    }?.let { capsBadge(it.caps) }
