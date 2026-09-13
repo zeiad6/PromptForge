@@ -8,6 +8,7 @@ import com.google.ai.edge.litertlm.EngineConfig as LtEngineConfig
 import com.google.ai.edge.litertlm.SamplerConfig as LtSamplerConfig
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -36,12 +37,13 @@ class DeviceLlmEngine(private val context: Context) {
     @Volatile
     private var mpFuture: java.util.concurrent.Future<String>? = null
 
-    /** User pressed stop: kills the active MediaPipe generation. LiteRT-LM
-     * streams cancel through the calling coroutine. */
+    /** User pressed stop. Deliberately LOCK-FREE: this runs on the UI
+     * thread, and taking the engine monitor here could block it for the
+     * whole model-load (seconds) — that was the stop-freezes-app bug.
+     * Future.cancel is thread-safe on its own; all cleanup happens on the
+     * worker thread afterwards. */
     fun abort() {
-        synchronized(this) {
-            runCatching { mpFuture?.cancel(true) }
-        }
+        runCatching { mpFuture?.cancel(true) }
     }
 
     fun unload() {
@@ -61,7 +63,13 @@ class DeviceLlmEngine(private val context: Context) {
         if (model.path.endsWith(".litertlm")) {
             chatLitertlm(model, prompt, temperature, onPartial)
         } else {
-            mutex.withLock { generateWithRecovery(model, prompt, onPartial, allowRetry = true) }
+            val job = kotlin.coroutines.coroutineContext[kotlinx.coroutines.Job]
+            mutex.withLock {
+                job?.ensureActive() // user may have pressed stop while queued
+                generateWithRecovery(model, prompt, onPartial, allowRetry = true) {
+                    job?.isActive != true
+                }
+            }
         }
     }
 
@@ -162,6 +170,7 @@ class DeviceLlmEngine(private val context: Context) {
         prompt: String,
         onPartial: (String) -> Unit,
         allowRetry: Boolean,
+        cancelled: () -> Boolean = { false },
     ): String {
         val firstError: Throwable
         try {
@@ -170,7 +179,8 @@ class DeviceLlmEngine(private val context: Context) {
             if (e is kotlinx.coroutines.CancellationException) throw e
             firstError = e
         }
-        // Recovery path: fresh CPU instance, one retry.
+        // Recovery path: fresh CPU instance, one retry — never after a stop.
+        if (cancelled()) throw kotlinx.coroutines.CancellationException("aborted")
         if (allowRetry && firstError.message != "prompt_too_long" &&
             firstError.message != "empty_response"
         ) {
@@ -220,7 +230,13 @@ class DeviceLlmEngine(private val context: Context) {
         } catch (e: Exception) {
             if (e is kotlinx.coroutines.CancellationException ||
                 e is java.util.concurrent.CancellationException
-            ) throw kotlinx.coroutines.CancellationException("aborted", e)
+            ) {
+                // Stopped by the user: tear the hot instance down HERE on the
+                // worker thread, so a half-cancelled native session is never
+                // reused — and the UI never waits on it.
+                runCatching { unload() }
+                throw kotlinx.coroutines.CancellationException("aborted", e)
+            }
             throw e
         } finally {
             mpFuture = null

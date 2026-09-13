@@ -155,6 +155,16 @@ class DocsVm(private val c: AppContainer) : ViewModel() {
         }
     }
 
+    private var job: kotlinx.coroutines.Job? = null
+
+    /** User pressed stop — cancel AI work without blocking anything. */
+    fun cancelWork() {
+        job?.cancel()
+        job = null
+        runCatching { c.deviceEngine.abort() }
+        _ui.value = _ui.value.copy(busySummary = false)
+    }
+
     /** AI summary — on-device model first, cloud fallback. */
     fun summarize() {
         if (_ui.value.busySummary) return
@@ -166,7 +176,7 @@ class DocsVm(private val c: AppContainer) : ViewModel() {
         else
             "You are an expert summarizer. Summarize the document precisely: 5–8 key points, then \"Bottom line:\" one sentence, then top-3 numbers/facts if present."
         _ui.value = _ui.value.copy(busySummary = true, summary = "")
-        scope.launch {
+        job = scope.launch {
             try {
                 val out = c.smartChat(system, text.take(12_000))
                 _ui.value = _ui.value.copy(busySummary = false, summary = out.trim())
@@ -357,6 +367,13 @@ fun DocsScreen(onNavigate: (String) -> Unit) {
                                         color = Palette.Sub,
                                     )
                                 }
+                                Spacer(Modifier.height(8.dp))
+                                GhostButton(
+                                    text = stringResource(R.string.msg_stop),
+                                    icon = painterResource(R.drawable.ic_stop),
+                                    tint = Palette.Red,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) { vm.cancelWork() }
                             }
                             if (state.summary.isNotEmpty()) {
                                 Text(

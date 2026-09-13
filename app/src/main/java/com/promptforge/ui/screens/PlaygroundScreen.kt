@@ -228,7 +228,7 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
     fun stopGeneration() {
         genJob?.cancel()
         genJob = null
-        c.deviceEngine.abort()
+        runCatching { c.deviceEngine.abort() } // lock-free; cannot block UI
         _ui.update { it.copy(busy = false, waiting = false) }
     }
 

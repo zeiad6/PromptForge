@@ -120,6 +120,16 @@ class AppBuilderVm(private val c: AppContainer) : ViewModel() {
         }
     }
 
+    private var job: kotlinx.coroutines.Job? = null
+
+    /** User pressed stop — cancel AI work without blocking anything. */
+    fun cancelWork() {
+        job?.cancel()
+        job = null
+        runCatching { c.deviceEngine.abort() }
+        _ui.value = _ui.value.copy(busy = false)
+    }
+
     fun build() {
         if (_ui.value.busy) return
         val desc = _ui.value.desc.trim()
@@ -136,7 +146,7 @@ class AppBuilderVm(private val c: AppContainer) : ViewModel() {
         }
         val user = (_ui.value.name.trim() + "\n\n" + desc).trim()
         _ui.value = _ui.value.copy(busy = true, html = null, code = null, builtFile = null, message = null)
-        scope.launch {
+        job = scope.launch {
             try {
                 val raw = c.smartChat(system, user)
                 val fence = Regex("(?s)```[a-zA-Z]*\\s*\\n(.*?)```").find(raw)
@@ -232,6 +242,15 @@ fun AppBuilderScreen(onNavigate: (String) -> Unit) {
                     modifier = Modifier.fillMaxWidth().height(46.dp),
                     loading = state.busy,
                 ) { vm.build() }
+                if (state.busy) {
+                    Spacer(Modifier.height(8.dp))
+                    GhostButton(
+                        text = stringResource(R.string.msg_stop),
+                        icon = painterResource(R.drawable.ic_stop),
+                        tint = Palette.Red,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { vm.cancelWork() }
+                }
                 state.message?.let { m ->
                     Spacer(Modifier.height(6.dp))
                     Text(m, style = MaterialTheme.typography.labelSmall, color = Palette.Red)

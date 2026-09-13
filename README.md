@@ -159,6 +159,34 @@ echo "sdk.dir=/path/to/android-sdk" > local.properties
 
 ---
 
+## 📱 Requirements — متطلبات التشغيل
+
+### 🇬🇧 What your phone needs
+
+| Tier | Android | RAM | SoC (examples) | What it runs |
+|---|---|---|---|---|
+| 🟢 Minimum | 7.0+ | 3 GB | any 64-bit chip (2017+) | Everything cloud + SmolLM2 135M (slower) |
+| 🟡 Comfortable — recommended | 10+ | 6 GB | Snapdragon 845 / Helio G90 / Dimensity 800+ (2019+) | All models ≤ 1.7 GB — incl. DeepSeek-R1 1.5B & LFM 2.5 — at good speed |
+| 🔴 Best experience | 12+ | 8–12 GB | Snapdragon 8 Gen 1+ / Google Tensor / Dimensity 9000+ | All 8 models incl. Gemma 4 E2B, Qwen3.5 4B, Phi-4-mini — usable reasoning speeds |
+
+- **Storage:** the app is ≈ 85 MB; each model is 0.14–3.9 GB. Keep ~1.2× the model size free while downloading.
+- **Acceleration:** any modern GPU (Adreno/Mali) speeds up generation; NPU paths are planned. Chat/Docs/App-Builder run on any tier.
+- **Battery:** long generations are happiest while charging.
+
+### 🇸🇦 متطلبات هاتفك
+
+| الفئة | أندرويد | الرام | المعالج (أمثلة) | ماذا يشغّل |
+|---|---|---|---|---|
+| 🟢 الحد الأدنى | 7.0+ | 3 جيجابايت | أي معالج 64 بت (2017+) | كل شيء سحابي + SmolLM2 135M (أبطأ) |
+| 🟡 مريح — مُوصى به | 10+ | 6 جيجابايت | سنابدراغون 845 / هيليو G90 / ديمينسيتي 800+ (2019+) | كل الموديلات حتى 1.7 جيجا — منها DeepSeek-R1 1.5B وLFM 2.5 — بسرعة جيدة |
+| 🔴 الأفضل | 12+ | 8–12 جيجابايت | سنابدراغون 8 Gen 1+ / جوجل تنسور / ديمينسيتي 9000+ | الموديلات الثمانية كلها بما فيها جيما 4 E2B وكوين 3.5 وفاي-4 ميني — بسرعات استدلال مريحة |
+
+- **التخزين:** التطبيق ≈ 85 ميجابايت، وكل موديل 0.14–3.9 جيجا. احتفظ بمساحة حرة تعادل 1.2× حجم الموديل أثناء التنزيل.
+- **التسريع:** أي كرت رسومات حديث (Adreno/Mali) يسرّع التوليد، ومسارات NPU مخطط لها. المختبر والمستندات وباني التطبيقات يعملون على أي فئة.
+- **البطارية:** يُفضّل شحن الهاتف أثناء جلسات التوليد الطويلة.
+
+---
+
 ## 📄 License — الترخيص
 
 This project is source-available for **personal use only** under the
