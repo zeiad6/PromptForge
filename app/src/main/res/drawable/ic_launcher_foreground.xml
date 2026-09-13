@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Lucide pen-tool, scaled into the adaptive safe zone -->
+    <group
+        android:scaleX="2.1"
+        android:scaleY="2.1"
+        android:translateX="28.5"
+        android:translateY="27.5">
+        <path
+            android:pathData="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"
+            android:strokeColor="#8B7CFF"
+            android:strokeWidth="1.7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="m18 13l-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18M2.3 2.3l7.286 7.286"
+            android:strokeColor="#8B7CFF"
+            android:strokeWidth="1.7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M11,11 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0"
+            android:strokeColor="#8B7CFF"
+            android:strokeWidth="1.7" />
+    </group>
+    <!-- glowing baseline -->
+    <path
+        android:pathData="M30,80 L66,80"
+        android:strokeColor="#22D3EE"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M71,74 L71,86"
+        android:strokeColor="#22D3EE"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round" />
+</vector>

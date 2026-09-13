@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PromptForge</string>
+    <string name="tagline">Craft professional prompts for AI agents</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="copy">Copy</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="retry">Retry</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="saved">Saved</string>
+    <string name="search_hint">Search…</string>
+    <string name="no_api_key">Add a free API key from Settings first</string>
+    <string name="error_generic">Something went wrong. Try again.</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_home">Home</string>
+    <string name="nav_templates">Templates</string>
+    <string name="nav_builder">Builder</string>
+    <string name="nav_playground">Lab</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_night">Good night</string>
+    <string name="home_subtitle">What will you forge today?</string>
+    <string name="stat_prompts">Prompts</string>
+    <string name="stat_avg_score">Avg score</string>
+    <string name="stat_favorites">Favorites</string>
+    <string name="quick_new_prompt">New prompt</string>
+    <string name="quick_templates">Templates</string>
+    <string name="quick_playground">Test a prompt</string>
+    <string name="quick_settings">Providers</string>
+    <string name="tip_of_day">Tip of the day</string>
+    <string name="recent_prompts">Recent prompts</string>
+    <string name="no_prompts_yet">No prompts yet</string>
+    <string name="no_prompts_hint">Forge your first professional prompt from a template or from scratch.</string>
+    <string name="open_settings">Open Settings</string>
+
+    <!-- Builder -->
+    <string name="builder_title">Prompt Builder</string>
+    <string name="field_title">Prompt title</string>
+    <string name="field_title_hint">e.g. Research agent for market analysis</string>
+    <string name="framework_label">Prompt framework</string>
+    <string name="output_settings">Output settings</string>
+    <string name="tone_label">Tone</string>
+    <string name="format_label">Response format</string>
+    <string name="prompt_lang_label">Prompt language</string>
+    <string name="detail_label">Detail level</string>
+    <string name="adv_options">Advanced options</string>
+    <string name="opt_chain">Step-by-step reasoning</string>
+    <string name="opt_chain_desc">Asks the model to think step by step before answering</string>
+    <string name="opt_clarify">Clarifying questions</string>
+    <string name="opt_clarify_desc">The agent asks you questions before starting the task</string>
+    <string name="opt_fewshot">Examples (few-shot)</string>
+    <string name="opt_fewshot_desc">Adds an instructions block for adding examples</string>
+    <string name="opt_unlimited">No limits — include everything</string>
+    <string name="opt_unlimited_desc">Execution directives: every request carried out in full, no summarizing, auto-continuation</string>
+    <string name="custom_sections">Custom sections (unlimited)</string>
+    <string name="add_section">Add section</string>
+    <string name="section_title_hint">Section title</string>
+    <string name="remove_section">Remove section</string>
+    <string name="live_preview">Live preview</string>
+    <string name="preview_empty">Start filling the fields to see your prompt take shape…</string>
+    <string name="quality_score">Quality score</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_copy">Copy</string>
+    <string name="btn_share">Share</string>
+    <string name="btn_enhance">Enhance with AI</string>
+    <string name="btn_try">Try it</string>
+    <string name="enhance_title">Enhanced prompt</string>
+    <string name="enhance_loading">Rewriting your prompt professionally…</string>
+    <string name="save_to_library">Save to library</string>
+    <string name="try_in_lab">Try in the Lab</string>
+    <string name="untitled_prompt">Untitled prompt</string>
+    <string name="prompt_name_hint">Prompt name</string>
+    <string name="title_required">Add a title first</string>
+
+    <!-- Quality tips -->
+    <string name="tip_title_missing">Add a clear title to organize your library</string>
+    <string name="tip_role_missing">Define a role for the agent (expert, assistant, writer…)</string>
+    <string name="tip_task_missing">State the main task in a clear, actionable sentence</string>
+    <string name="tip_context_missing">Add context: background, data, or the situation</string>
+    <string name="tip_constraints_missing">Add constraints and rules (length, style, dos and don\'ts)</string>
+    <string name="tip_audience_missing">Specify the target audience</string>
+    <string name="tip_too_short">The prompt is short — enrich it with more specifics</string>
+    <string name="tip_too_long">The prompt is very long — trim what is not essential</string>
+    <string name="tip_vague_words">Remove vague words like "nice" or "something" and be specific</string>
+    <string name="tip_add_numbers">Use measurable numbers and criteria wherever possible</string>
+    <string name="tip_excellent">Excellent! Your prompt is well structured and clear</string>
+
+    <!-- Templates -->
+    <string name="templates_title">Templates</string>
+    <string name="templates_subtitle">Ready-made professional prompt blueprints</string>
+    <string name="use_template">Use template</string>
+    <string name="cat_all">All</string>
+    <string name="cat_writing">Writing</string>
+    <string name="cat_dev">Development</string>
+    <string name="cat_business">Business</string>
+    <string name="cat_edu">Education</string>
+    <string name="cat_marketing">Marketing</string>
+    <string name="cat_agents">AI Agents</string>
+    <string name="cat_analysis">Analysis</string>
+    <string name="cat_media">Media</string>
+
+    <!-- Playground -->
+    <string name="playground_title">Prompt Lab</string>
+    <string name="system_prompt">System prompt</string>
+    <string name="system_none">No system prompt — the model will answer directly</string>
+    <string name="model_label">Model</string>
+    <string name="refresh_models">Refresh models</string>
+    <string name="temperature">Creativity (temperature)</string>
+    <string name="send_hint">Message the model…</string>
+    <string name="thinking">Thinking…</string>
+    <string name="key_missing_title">Connect a free model</string>
+    <string name="key_missing_body">Add a free API key (Gemini, Groq or OpenRouter) from Settings to test your prompts live.</string>
+    <string name="get_free_key">Get a free key</string>
+    <string name="clear_chat">Clear conversation</string>
+    <string name="load_prompt">Load a prompt</string>
+    <string name="lib_pick_prompt">Pick a prompt</string>
+
+    <!-- Library -->
+    <string name="library_title">My Library</string>
+    <string name="filter_all">All</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="filter_top">Top quality</string>
+    <string name="no_results">No results</string>
+    <string name="export_all">Export all (JSON)</string>
+    <string name="confirm_delete_title">Delete prompt?</string>
+    <string name="confirm_delete_body">"%1$s" will be removed permanently.</string>
+    <string name="used_times">Used %1$d times</string>
+    <string name="try_prompt">Try</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="provider_section">AI model provider</string>
+    <string name="provider_hint">All three providers have free tiers. Pick one, grab a free key, and you are ready.</string>
+    <string name="api_key">API key</string>
+    <string name="api_key_hint">Paste your key here</string>
+    <string name="api_key_for">%1$s API key</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="paste">Paste</string>
+    <string name="remove_key">Remove key</string>
+    <string name="key_removed">Key removed</string>
+    <string name="connected">Connected</string>
+    <string name="not_connected">Not connected</string>
+    <string name="back">Back</string>
+
+    <!-- Appearance & language -->
+    <string name="appearance_section">Appearance &amp; language</string>
+    <string name="theme_title">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="lang_title">App language</string>
+    <string name="lang_system">Device default</string>
+    <string name="lang_name_ar">العربية</string>
+    <string name="lang_name_en">English</string>
+    <string name="lang_restart_hint">The app restarts to apply the language.</string>
+
+    <!-- Developer -->
+    <string name="dev_title">Developer</string>
+    <string name="dev_credit">Developed by Ziyad Al-Hamadi</string>
+    <string name="dev_phone">Phone: +967 784 908 515</string>
+    <string name="dev_email">Email: z30432981@gmail.com</string>
+    <string name="dev_call">Call</string>
+    <string name="dev_email_action">Email</string>
+
+    <!-- Model / key diagnostics -->
+    <string name="models_count">%1$d models available</string>
+    <string name="models_live">(live from provider)</string>
+    <string name="models_default">(built-in list)</string>
+    <string name="verifying_key">Verifying key…</string>
+    <string name="key_verified">Key verified ✓</string>
+    <string name="key_invalid">Key looks invalid ✗</string>
+    <string name="key_unverified">Saved — couldn\'t verify (offline?)</string>
+
+    <!-- Lab errors -->
+    <string name="err_rate">Free-tier rate limit hit (429). Wait a moment, switch model or provider — or try again.</string>
+    <string name="err_invalid_key">The API key looks invalid or expired. Check it in Settings.</string>
+    <string name="err_model">This model isn\'t available for your key. Refreshing the model list helps.</string>
+    <string name="err_bad_request">The request was rejected. Check your prompt or model.</string>
+    <string name="err_network">Network error — check your connection.</string>
+    <string name="err_empty">The model returned an empty answer. Try rephrasing or another model.</string>
+    <string name="err_other">Something went wrong</string>
+    <string name="waiting_retry">Rate limited — retrying automatically…</string>
+    <string name="expand_input">Expand input</string>
+    <string name="err_region">Free tier isn\'t available for your key\'s region (FAILED_PRECONDITION). Try another provider.</string>
+    <string name="local_section">Local models (Ollama)</string>
+    <string name="local_host">Local server URL</string>
+    <string name="local_host_hint">http://192.168.1.60:11434/v1/</string>
+    <string name="local_test">Connect &amp; load models</string>
+    <string name="local_testing">Connecting…</string>
+    <string name="local_ok">%1$d local models detected ✓</string>
+    <string name="local_fail">Couldn\'t reach Ollama — check the URL, firewall (port 11434) and that \'ollama serve\' is running.</string>
+    <string name="local_recommended">Recommended models — run the command on your computer:</string>
+    <string name="local_hint">1) Install Ollama from ollama.com/download\n2) Run: ollama serve\n3) Find your PC IP (e.g. 192.168.1.60)\n4) Put http://PC-IP:11434/v1/ above and allow port 11434 in your firewall\n5) Pull models with the commands below</string>
+    <string name="copy_command">Copy command</string>
+    <string name="msg_edit">Edit &amp; resend</string>
+    <string name="msg_regenerate">Regenerate</string>
+    <string name="msg_copy">Copy message</string>
+
+    <!-- Local models management -->
+    <string name="local_mgmt_title">Local model manager</string>
+    <string name="local_manage">Manage &amp; download models</string>
+    <string name="local_installed">Installed models</string>
+    <string name="local_none_installed">No models installed yet — download one from the catalog below.</string>
+    <string name="local_catalog">Download a model</string>
+    <string name="local_download">Download</string>
+    <string name="local_pause">Pause</string>
+    <string name="local_resume">Resume</string>
+    <string name="local_update">Update</string>
+    <string name="local_paused">Paused — resumes from where it stopped</string>
+    <string name="local_done">Downloaded ✓</string>
+    <string name="local_failed_dl">Download failed — check the connection and try again</string>
+    <string name="local_confirm_delete">Delete model?</string>
+    <string name="local_confirm_delete_body">"%1$s" (%2$s) will be removed from your computer.</string>
+    <string name="local_deleted">Model deleted</string>
+    <string name="local_mdl_family">Family: %1$s • Params: %2$s • Quant: %3$s</string>
+    <string name="local_mgmt_hint">For phone access, run the server on all interfaces: OLLAMA_HOST=0.0.0.0 ollama serve</string>
+    <string name="local_refresh_list">Refresh list</string>
+    <string name="local_discover">Auto-find server</string>
+    <string name="local_discovering">Scanning your network…</string>
+    <string name="local_discover_fail">No Ollama server found on this network — make sure it\'s running and both devices share the same Wi-Fi.</string>
+    <string name="local_ready">Ready in the Lab ✓</string>
+
+    <!-- On-device (AI Edge) -->
+    <string name="device_section">On-device models (no PC, no internet)</string>
+    <string name="device_import">Import model file</string>
+    <string name="device_import_hint">Download a model right inside the app below, or import a .task/.litertlm file you already have</string>
+    <string name="device_catalog_title">Built-in store — one-tap download</string>
+    <string name="device_dl_bg">You can keep using the app while a model downloads; downloads resume automatically</string>
+    <string name="device_download">Download</string>
+    <string name="device_pause">Pause</string>
+    <string name="device_resume">Resume</string>
+    <string name="device_retry">Retry</string>
+    <string name="device_dl_done">Download complete — model activated ✓</string>
+    <string name="device_dl_fail">Download failed — check your connection and try again</string>
+    <string name="device_gated_hint">Google\'s Gemma models require accepting the license in your phone browser first (link copies the page)</string>
+    <string name="device_cat_smollm">SmolLM2 135M — very light (quick test)</string>
+    <string name="device_cat_olmo">OLMo 2 1B — balanced</string>
+    <string name="device_cat_qwen">Qwen2.5 1.5B — strongest</string>
+<string name="opt_creative">Creativity boost</string>
+    <string name="opt_creative_desc">Professional creative-craft directives: original angles, vivid imagery, no clichés</string>
+    <string name="temp_precise">Precise</string>
+    <string name="temp_balanced">Balanced</string>
+    <string name="temp_creative">Creative</string>
+    <string name="temp_wild">Wild</string>
+    <string name="temp_hint_precise">Precise — focused, consistent, factual answers</string>
+    <string name="temp_hint_balanced">Balanced — the sweet spot for most tasks</string>
+    <string name="temp_hint_creative">Creative — bolder ideas and richer phrasing</string>
+    <string name="temp_hint_wild">Wild — maximum imagination; great for brainstorming</string>
+    <string name="service_download">Downloading model — continues in background</string>
+    <string name="service_download_starting">Preparing download…</string>
+    <string name="service_download_progress">%1$d%% — continues in background</string>
+    <string name="service_inference">AI working on your device</string>
+    <string name="service_inference_body">On-device generation in progress — you can switch apps</string>
+    <string name="notif_channel_downloads">Model downloads</string>
+    <string name="notif_channel_inference">On-device tasks</string>
+    <string name="crash_title">Last crash report (if any)</string>
+    <string name="crash_copy">Copy report</string>
+    <string name="device_none">No models imported yet.</string>
+    <string name="device_pick_first">Import a model first: Settings → On-device</string>
+    <string name="device_rec">Recommended (from HuggingFace):</string>
+    <string name="device_imported">Model imported ✓</string>
+    <string name="device_import_fail">Import failed — try a different file</string>
+    <string name="device_streaming">generating on-device…</string>
+
+    <!-- Research & sources -->
+    <string name="opt_research">Research &amp; sources mode</string>
+    <string name="opt_research_desc">Cited answers: sources with links and dates, fact/inference labels, numbered references</string>
+    <string name="btn_research">Enrich with research</string>
+    <string name="research_done">Research pack added as a sources section ✓</string>
+    <string name="model">Model</string>
+    <string name="default_models">Default models</string>
+    <string name="key_saved">Key saved ✓</string>
+    <string name="temperature_label">Default creativity (temperature)</string>
+    <string name="about_title">About PromptForge</string>
+    <string name="about_body">A local-first studio for crafting professional prompts for AI agents — frameworks, live quality scoring, AI enhancement, and a lab to test prompts against free models.</string>
+    <string name="version">Version %1$s</string>
+    <string name="privacy_note">Your keys and prompts stay on your device only.</string>
+    <string name="credits_docs">Docs cross-checked via Context7</string>
+    <string name="credits_icons">Icons: Lucide (ISC) via Iconify</string>
+    <string name="credits_font">Font: IBM Plex Sans Arabic (OFL)</string>
+    <string name="reset_data">Clear all data</string>
+    <string name="reset_confirm_body">All saved prompts, keys and settings will be erased. This cannot be undone.</string>
+
+    <!-- Enums / option labels -->
+    <string name="lang_arabic">Arabic</string>
+    <string name="lang_english">English</string>
+    <string name="lang_both">Bilingual</string>
+    <string name="detail_concise">Concise</string>
+    <string name="detail_balanced">Balanced</string>
+    <string name="detail_detailed">Detailed</string>
+    <string name="detail_exhaustive">Exhaustive</string>
+    <string name="tone_professional">Professional</string>
+    <string name="tone_friendly">Friendly</string>
+    <string name="tone_persuasive">Persuasive</string>
+    <string name="tone_academic">Academic</string>
+    <string name="tone_humorous">Humorous</string>
+    <string name="tone_direct">Direct</string>
+    <string name="tone_empathetic">Empathetic</string>
+    <string name="tone_technical">Technical</string>
+    <string name="tone_storytelling">Storytelling</string>
+    <string name="format_markdown">Markdown</string>
+    <string name="format_plain">Plain text</string>
+    <string name="format_json">JSON</string>
+    <string name="format_table">Table</string>
+    <string name="format_steps">Numbered steps</string>
+    <string name="format_bullets">Bullets</string>
+    <string name="format_code">Code + explanation</string>
+    <string name="format_email">Email</string>
+
+    <!-- Home tips -->
+    <string name="home_tips">
+        "Great agents get great roles: start your prompt by defining WHO the model is.\nGive the model an exit: tell it exactly how the answer should look.\nOne prompt, one goal — split complex tasks into a chain of prompts.\nShow, don\'t tell: add one example of the output you expect.\nTest in the Lab and iterate — a prompt is a draft until it proves itself."
+    </string>
+</resources>

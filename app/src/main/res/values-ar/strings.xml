@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">برومبت فورج</string>
+    <string name="tagline">اصنع برومبتات احترافية لوكلاء الذكاء الاصطناعي</string>
+
+    <!-- Common -->
+    <string name="ok">حسناً</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+    <string name="copy">نسخ</string>
+    <string name="share">مشاركة</string>
+    <string name="delete">حذف</string>
+    <string name="edit">تعديل</string>
+    <string name="close">إغلاق</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="copied">تم النسخ إلى الحافظة</string>
+    <string name="saved">تم الحفظ</string>
+    <string name="search_hint">ابحث…</string>
+    <string name="no_api_key">أضف مفتاح API مجاني من الإعدادات أولاً</string>
+    <string name="error_generic">حدث خطأ ما، حاول مجدداً.</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_templates">القوالب</string>
+    <string name="nav_builder">الصانع</string>
+    <string name="nav_playground">المختبر</string>
+    <string name="nav_library">المكتبة</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Home -->
+    <string name="greeting_morning">صباح الخير</string>
+    <string name="greeting_afternoon">مساء الخير</string>
+    <string name="greeting_evening">مساء الخير</string>
+    <string name="greeting_night">ليلة هادئة</string>
+    <string name="home_subtitle">بماذا ستصنع برومبتك اليوم؟</string>
+    <string name="stat_prompts">برومبت</string>
+    <string name="stat_avg_score">متوسط الجودة</string>
+    <string name="stat_favorites">مفضلة</string>
+    <string name="quick_new_prompt">برومبت جديد</string>
+    <string name="quick_templates">القوالب الجاهزة</string>
+    <string name="quick_playground">جرّب برومبتاً</string>
+    <string name="quick_settings">المزوّدون</string>
+    <string name="tip_of_day">نصيحة اليوم</string>
+    <string name="recent_prompts">أحدث البرومبتات</string>
+    <string name="no_prompts_yet">لا توجد برومبتات بعد</string>
+    <string name="no_prompts_hint">اصنع أول برومبت احترافي لك من قالب جاهز أو من الصفر.</string>
+    <string name="open_settings">افتح الإعدادات</string>
+
+    <!-- Builder -->
+    <string name="builder_title">صانع البرومبت</string>
+    <string name="field_title">عنوان البرومبت</string>
+    <string name="field_title_hint">مثال: وكيل أبحاث لتحليل السوق</string>
+    <string name="framework_label">إطار البرومبت</string>
+    <string name="output_settings">إعدادات الإخراج</string>
+    <string name="tone_label">النبرة</string>
+    <string name="format_label">صيغة الإجابة</string>
+    <string name="prompt_lang_label">لغة البرومبت</string>
+    <string name="detail_label">مستوى التفصيل</string>
+    <string name="adv_options">خيارات متقدمة</string>
+    <string name="opt_chain">تفكير خطوة بخطوة</string>
+    <string name="opt_chain_desc">يطلب من النموذج التفكير خطوة بخطوة قبل الإجابة</string>
+    <string name="opt_clarify">أسئلة توضيحية</string>
+    <string name="opt_clarify_desc">يسألك الوكيل أسئلة قبل بدء المهمة</string>
+    <string name="opt_fewshot">أمثلة (Few-shot)</string>
+    <string name="opt_fewshot_desc">يضيف قسماً لإرفاق أمثلة على المخرجات المطلوبة</string>
+    <string name="opt_unlimited">بلا قيود — شمّل كل شيء</string>
+    <string name="opt_unlimited_desc">توجيهات تنفيذ: تنفيذ كل طلب كاملاً دون تلخيص مع استكمال تلقائي</string>
+    <string name="custom_sections">أقسام مخصصة (غير محدودة)</string>
+    <string name="add_section">إضافة قسم</string>
+    <string name="section_title_hint">عنوان القسم</string>
+    <string name="remove_section">إزالة القسم</string>
+    <string name="live_preview">معاينة حية</string>
+    <string name="preview_empty">ابدأ بتعبئة الحقول ليشكّل برومبتك أمامك…</string>
+    <string name="quality_score">جودة البرومبت</string>
+    <string name="btn_save">حفظ</string>
+    <string name="btn_copy">نسخ</string>
+    <string name="btn_share">مشاركة</string>
+    <string name="btn_enhance">تحسين بالذكاء</string>
+    <string name="btn_try">تجربة</string>
+    <string name="enhance_title">البرومبت المحسّن</string>
+    <string name="enhance_loading">يعيد صياغة برومبتك باحترافية…</string>
+    <string name="save_to_library">حفظ في المكتبة</string>
+    <string name="try_in_lab">تجربة في المختبر</string>
+    <string name="untitled_prompt">برومبت بدون عنوان</string>
+    <string name="prompt_name_hint">اسم البرومبت</string>
+    <string name="title_required">أضف عنواناً أولاً</string>
+
+    <!-- Quality tips -->
+    <string name="tip_title_missing">أضف عنواناً واضحاً لتنظيم مكتبتك</string>
+    <string name="tip_role_missing">حدّد دوراً للوكيل (خبير، مساعد، كاتب…)</string>
+    <string name="tip_task_missing">اذكر المهمة الرئيسية بجملة واضحة وقابلة للتنفيذ</string>
+    <string name="tip_context_missing">أضف سياقاً: خلفية، بيانات، أو وصفاً للموقف</string>
+    <string name="tip_constraints_missing">أضف قيوداً وقواعد (الطول، الأسلوب، المسموح والممنوع)</string>
+    <string name="tip_audience_missing">حدّد الجمهور المستهدف</string>
+    <string name="tip_too_short">البرومبت قصير — أثرِه بتفاصيل أدق</string>
+    <string name="tip_too_long">البرومبت طويل جداً — اختصر ما لا يلزم</string>
+    <string name="tip_vague_words">أزل الكلمات الغامضة مثل \"جميل\" أو \"شيء ما\" وكن محدداً</string>
+    <string name="tip_add_numbers">استخدم أرقاماً ومعايير قابلة للقياس كلما أمكن</string>
+    <string name="tip_excellent">ممتاز! برومبتك منظّم وواضح وجاهز للاستخدام</string>
+
+    <!-- Templates -->
+    <string name="templates_title">القوالب</string>
+    <string name="templates_subtitle">مخططات برومبت احترافية جاهزة</string>
+    <string name="use_template">استخدم القالب</string>
+    <string name="cat_all">الكل</string>
+    <string name="cat_writing">كتابة</string>
+    <string name="cat_dev">تطوير</string>
+    <string name="cat_business">أعمال</string>
+    <string name="cat_edu">تعليم</string>
+    <string name="cat_marketing">تسويق</string>
+    <string name="cat_agents">وكلاء AI</string>
+    <string name="cat_analysis">تحليل</string>
+    <string name="cat_media">إعلام</string>
+
+    <!-- Playground -->
+    <string name="playground_title">مختبر البرومبت</string>
+    <string name="system_prompt">برومبت النظام</string>
+    <string name="system_none">لا يوجد برومبت نظام — سيجيب النموذج مباشرة</string>
+    <string name="model_label">الموديل</string>
+    <string name="refresh_models">تحديث الموديلات</string>
+    <string name="temperature">الإبداع (Temperature)</string>
+    <string name="send_hint">راسل النموذج…</string>
+    <string name="thinking">يفكّر…</string>
+    <string name="key_missing_title">اربط موديلاً مجانياً</string>
+    <string name="key_missing_body">أضف مفتاح API مجاني (Gemini أو Groq أو OpenRouter) من الإعدادات لتجربة برومبتاتك مباشرة.</string>
+    <string name="get_free_key">احصل على مفتاح مجاني</string>
+    <string name="clear_chat">محادثة جديدة</string>
+    <string name="load_prompt">حمّل برومبتاً</string>
+    <string name="lib_pick_prompt">اختر برومبتاً</string>
+
+    <!-- Library -->
+    <string name="library_title">مكتبتي</string>
+    <string name="filter_all">الكل</string>
+    <string name="filter_favorites">المفضلة</string>
+    <string name="filter_top">الأعلى جودة</string>
+    <string name="no_results">لا توجد نتائج</string>
+    <string name="export_all">تصدير الكل (JSON)</string>
+    <string name="confirm_delete_title">حذف البرومبت؟</string>
+    <string name="confirm_delete_body">سيُحذف \"%1$s\" نهائياً.</string>
+    <string name="used_times">استُخدم %1$d مرة</string>
+    <string name="try_prompt">تجربة</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="provider_section">مزوّد الموديلات</string>
+    <string name="provider_hint">المزوّدون الثلاثة يوفّرون باقات مجانية. اختر واحداً، احصل على مفتاح مجاني، وابدأ فوراً.</string>
+    <string name="api_key">مفتاح API</string>
+    <string name="api_key_hint">الصق مفتاحك هنا</string>
+    <string name="api_key_for">مفتاح %1$s</string>
+    <string name="show">إظهار</string>
+    <string name="hide">إخفاء</string>
+    <string name="paste">لصق</string>
+    <string name="remove_key">حذف المفتاح</string>
+    <string name="key_removed">تم حذف المفتاح</string>
+    <string name="connected">متصل</string>
+    <string name="not_connected">غير متصل</string>
+    <string name="back">رجوع</string>
+
+    <!-- Appearance & language -->
+    <string name="appearance_section">المظهر واللغة</string>
+    <string name="theme_title">السمة</string>
+    <string name="theme_system">حسب الجهاز</string>
+    <string name="theme_dark">ليلي</string>
+    <string name="theme_light">نهاري</string>
+    <string name="lang_title">لغة التطبيق</string>
+    <string name="lang_system">لغة الجهاز</string>
+    <string name="lang_name_ar">العربية</string>
+    <string name="lang_name_en">English</string>
+    <string name="lang_restart_hint">يعاد تشغيل التطبيق لتطبيق اللغة.</string>
+
+    <!-- Developer -->
+    <string name="dev_title">المطوّر</string>
+    <string name="dev_credit">تم تطوير التطبيق بواسطة زياد الحمادي</string>
+    <string name="dev_phone">الهاتف: 515 908 784 967+</string>
+    <string name="dev_email">البريد الإلكتروني: z30432981@gmail.com</string>
+    <string name="dev_call">اتصال</string>
+    <string name="dev_email_action">مراسلة</string>
+
+    <!-- Model / key diagnostics -->
+    <string name="models_count">%1$d موديلاً متاحاً</string>
+    <string name="models_live">(قائمة حية من المزوّد)</string>
+    <string name="models_default">(قائمة مدمجة)</string>
+    <string name="verifying_key">جارٍ التحقق من المفتاح…</string>
+    <string name="key_verified">تم التحقق من المفتاح ✓</string>
+    <string name="key_invalid">يبدو أن المفتاح غير صالح ✗</string>
+    <string name="key_unverified">تم الحفظ — تعذّر التحقق (لا اتصال؟)</string>
+
+    <!-- Lab errors -->
+    <string name="err_rate">تجاوزت حد الطلبات المجاني (429). انتظر قليلاً أو بدّل الموديل/المزوّد ثم أعد المحاولة.</string>
+    <string name="err_invalid_key">يبدو أن مفتاح API غير صالح أو منتهي. راجعه في الإعدادات.</string>
+    <string name="err_model">هذا الموديل غير متاح لمفتاحك. حدّث قائمة الموديلات.</string>
+    <string name="err_bad_request">رُفض الطلب. راجع البرومبت أو الموديل.</string>
+    <string name="err_network">خطأ شبكة — تحقق من اتصالك.</string>
+    <string name="err_empty">أعاد النموذج إجابة فارغة. أعد الصياغة أو جرّب موديلاً آخر.</string>
+    <string name="err_other">حدث خطأ غير متوقع</string>
+    <string name="waiting_retry">تجاوز حد الطلبات — يعيد المحاولة تلقائياً…</string>
+    <string name="expand_input">توسيع مربع الإدخال</string>
+    <string name="err_region">الباقة المجانية غير متاحة لبلد مفتاحك (FAILED_PRECONDITION) — جرّب مزوّداً آخر.</string>
+    <string name="local_section">الموديلات المحلية (Ollama)</string>
+    <string name="local_host">عنوان الخادم المحلي</string>
+    <string name="local_host_hint">http://192.168.1.60:11434/v1/</string>
+    <string name="local_test">اتصال وجلب الموديلات</string>
+    <string name="local_testing">جارٍ الاتصال…</string>
+    <string name="local_ok">تم اكتشاف %1$d موديلاً محلياً ✓</string>
+    <string name="local_fail">تعذّر الوصول إلى Ollama — تحقق من العنوان، والجدار الناري (منفذ 11434)، ومن تشغيل الأمر: ollama serve</string>
+    <string name="local_recommended">موديلات موصى بها — انسخ الأمر ونفّذه على حاسوبك:</string>
+    <string name="local_hint">1) ثبّت Ollama من ollama.com/download\n2) شغّل: ollama serve\n3) اعرف IP حاسوبك (مثال: 192.168.1.60)\n4) ضع http://IP-الحاسوب:11434/v1/ بالأعلى واسمح بالمنفذ 11434 في الجدار الناري\n5) نزّل الموديلات بالأوامر أدناه</string>
+    <string name="copy_command">نسخ الأمر</string>
+    <string name="msg_edit">تعديل وإعادة إرسال</string>
+    <string name="msg_regenerate">إعادة التوليد</string>
+    <string name="msg_copy">نسخ الرسالة</string>
+
+    <!-- Local models management -->
+    <string name="local_mgmt_title">إدارة الموديلات المحلية</string>
+    <string name="local_manage">إدارة وتحميل الموديلات</string>
+    <string name="local_installed">الموديلات المثبتة</string>
+    <string name="local_none_installed">لا توجد موديلات مثبتة بعد — حمّل واحداً من الكتالوج أدناه.</string>
+    <string name="local_catalog">تحميل موديل جديد</string>
+    <string name="local_download">تحميل</string>
+    <string name="local_pause">إيقاف مؤقت</string>
+    <string name="local_resume">استئناف</string>
+    <string name="local_update">تحديث</string>
+    <string name="local_paused">متوقف مؤقتاً — سيُستأنف من نفس النقطة</string>
+    <string name="local_done">تم التحميل ✓</string>
+    <string name="local_failed_dl">فشل التحميل — تحقق من الاتصال ثم أعد المحاولة</string>
+    <string name="local_confirm_delete">حذف الموديل؟</string>
+    <string name="local_confirm_delete_body">سيُحذف "%1$s" (%2$s) من حاسوبك.</string>
+    <string name="local_deleted">تم حذف الموديل</string>
+    <string name="local_mdl_family">العائلة: %1$s • المعاملات: %2$s • الضغط: %3$s</string>
+    <string name="local_mgmt_hint">ليعمل التحكم من هاتفك، شغّل الخادم على جميع الواجهات: OLLAMA_HOST=0.0.0.0 ollama serve</string>
+    <string name="local_refresh_list">تحديث القائمة</string>
+    <string name="local_discover">بحث تلقائي عن الخادم</string>
+    <string name="local_discovering">يفحص شبكتك…</string>
+    <string name="local_discover_fail">لم يُعثر على خادم Ollama في هذه الشبكة — تأكد من تشغيله ومن اتصال الجهازين بنفس الواي فاي.</string>
+    <string name="local_ready">جاهز في المختبر ✓</string>
+
+    <!-- On-device (AI Edge) -->
+    <string name="device_section">موديلات على الجهاز (بلا حاسوب وبلا إنترنت)</string>
+    <string name="device_import">استيراد ملف موديل</string>
+    <string name="device_import_hint">نزّل موديلاً مباشرة داخل التطبيق بالأسفل، أو استورد ملف .task/.litertlm لديك بالفعل</string>
+    <string name="device_catalog_title">المتجر المدمج — تنزيل بنقرة واحدة</string>
+    <string name="device_dl_bg">يمكنك التنقل داخل التطبيق أثناء التنزيل، ويُستكمل التنزيل تلقائياً بعد الانقطاع</string>
+    <string name="device_download">تنزيل</string>
+    <string name="device_pause">إيقاف مؤقت</string>
+    <string name="device_resume">استكمال</string>
+    <string name="device_retry">إعادة المحاولة</string>
+    <string name="device_dl_done">اكتمل التنزيل وتم تفعيل الموديل ✓</string>
+    <string name="device_dl_fail">فشل التنزيل — تحقق من اتصالك وحاول مجدداً</string>
+    <string name="device_gated_hint">موديلات جيما من Google تتطلب قبول الترخيص في متصفح هاتفك أولاً (الرابط يُنسخ ويفتح الصفحة)</string>
+    <string name="device_cat_smollm">سمول إل‌إم 2 — 135M (خفيف جداً — للتجربة السريعة)</string>
+    <string name="device_cat_olmo">أولمو 2 — 1B (متوازن)</string>
+    <string name="device_cat_qwen">كوين 2.5 — 1.5B (الأقوى)</string>
+<string name="opt_creative">تعزيز الإبداع</string>
+    <string name="opt_creative_desc">توجيهات احترافية للحرفة الإبداعية: زوايا أصلية، صور حية، بلا كليشيهات</string>
+    <string name="temp_precise">دقيق</string>
+    <string name="temp_balanced">متوازن</string>
+    <string name="temp_creative">إبداعي</string>
+    <string name="temp_wild">جامح</string>
+    <string name="temp_hint_precise">دقيق — إجابات مركزة ومتسقة وقائمة على الحقائق</string>
+    <string name="temp_hint_balanced">متوازن — النقطة المثالية لمعظم المهام</string>
+    <string name="temp_hint_creative">إبداعي — أفكار أجرأ وصياغة أغنى</string>
+    <string name="temp_hint_wild">جامح — أقصى تخيل؛ مثالي لتوليد الأفكار</string>
+    <string name="service_download">جارٍ تنزيل الموديل — يكمل في الخلفية</string>
+    <string name="service_download_starting">تحضير التنزيل…</string>
+    <string name="service_download_progress">%1$d%% — يكمل في الخلفية</string>
+    <string name="service_inference">الذكاء الاصطناعي يعمل على جهازك</string>
+    <string name="service_inference_body">توليد على الجهاز قيد التنفيذ — يمكنك الانتقال لتطبيق آخر</string>
+    <string name="notif_channel_downloads">تنزيلات الموديلات</string>
+    <string name="notif_channel_inference">مهام على الجهاز</string>
+    <string name="crash_title">تقرير آخر عطل (إن وُجد)</string>
+    <string name="crash_copy">نسخ التقرير</string>
+    <string name="device_none">لم يتم استيراد أي موديل بعد.</string>
+    <string name="device_pick_first">استورد موديلاً أولاً: الإعدادات ← على الجهاز</string>
+    <string name="device_rec">موديلات موصى بها (من HuggingFace):</string>
+    <string name="device_imported">تم استيراد الموديل ✓</string>
+    <string name="device_import_fail">فشل الاستيراد — جرّب ملفاً آخر</string>
+    <string name="device_streaming">يولّد على الجهاز…</string>
+
+    <!-- Research & sources -->
+    <string name="opt_research">وضع البحث والمصادر</string>
+    <string name="opt_research_desc">إجابات موثقة: مصادر بروابط وتواريخ، تمييز الحقيقة من الاستنتاج، وقائمة مراجع مرقمة</string>
+    <string name="btn_research">إثراء بالبحث الذكي</string>
+    <string name="research_done">أُضيفت حزمة البحث كقسم مصادر ✓</string>
+    <string name="model">الموديل</string>
+    <string name="default_models">الموديلات الافتراضية</string>
+    <string name="key_saved">تم حفظ المفتاح ✓</string>
+    <string name="temperature_label">الإبداع الافتراضي (Temperature)</string>
+    <string name="about_title">عن برومبت فورج</string>
+    <string name="about_body">استوديو محلي لصياغة البرومبتات الاحترافية لوكلاء الذكاء الاصطناعي — أطر جاهزة، تقييم جودة فوري، تحسين بالذكاء، ومختبر لتجربة البرومبتات على موديلات مجانية.</string>
+    <string name="version">الإصدار %1$s</string>
+    <string name="privacy_note">مفاتيحك وبرومبتاتك تبقى على جهازك فقط.</string>
+    <string name="credits_docs">التوثيقات مُتحقق منها عبر Context7</string>
+    <string name="credits_icons">الأيقونات: Lucide (ISC) عبر Iconify</string>
+    <string name="credits_font">الخط: IBM Plex Sans Arabic (OFL)</string>
+    <string name="reset_data">مسح كل البيانات</string>
+    <string name="reset_confirm_body">ستُحذف كل البرومبتات والمفاتيح والإعدادات نهائياً. لا يمكن التراجع.</string>
+
+    <!-- Enums / option labels -->
+    <string name="lang_arabic">العربية</string>
+    <string name="lang_english">English</string>
+    <string name="lang_both">ثنائي اللغة</string>
+    <string name="detail_concise">موجز</string>
+    <string name="detail_balanced">متوازن</string>
+    <string name="detail_detailed">مفصّل</string>
+    <string name="detail_exhaustive">شامل جداً</string>
+    <string name="tone_professional">احترافية</string>
+    <string name="tone_friendly">ودّية</string>
+    <string name="tone_persuasive">إقناعية</string>
+    <string name="tone_academic">أكاديمية</string>
+    <string name="tone_humorous">طريفة</string>
+    <string name="tone_direct">مباشرة</string>
+    <string name="tone_empathetic">متعاطفة</string>
+    <string name="tone_technical">تقنية</string>
+    <string name="tone_storytelling">قصصية</string>
+    <string name="format_markdown">Markdown</string>
+    <string name="format_plain">نص عادي</string>
+    <string name="format_json">JSON</string>
+    <string name="format_table">جدول</string>
+    <string name="format_steps">خطوات مرقمة</string>
+    <string name="format_bullets">نقاط</string>
+    <string name="format_code">كود + شرح</string>
+    <string name="format_email">بريد إلكتروني</string>
+
+    <!-- Home tips -->
+    <string name="home_tips">
+        "الوكلاء العظماء يحصلون على أدوار عظيمة: ابدأ برومبتك بتحديد \"من\" يكون النموذج.\nأعطِ النموذج شكلاً واضحاً للإجابة: كيف تريده أن تبدو بالضبط؟\nبرومبت واحد لهدف واحد — قسّم المهام المعقدة إلى سلسلة برومبتات.\nأرِ ولا تقل: أرفق مثالاً واحداً على المخرجات التي تتوقعها.\nجرّب في المختبر وحسّن باستمرار — البرومبت مسوّدة حتى تثبت جدواه."
+    </string>
+</resources>
