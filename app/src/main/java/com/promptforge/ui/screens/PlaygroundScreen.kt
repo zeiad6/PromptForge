@@ -100,6 +100,8 @@ data class PlaygroundUiState(
     val hasKey: Boolean = false,
     val temperature: Float = 0.7f,
     val refreshingModels: Boolean = false,
+    /** Deep Think: always use the full reasoning scaffold (hard tasks). */
+    val deepThink: Boolean = false,
 )
 
 class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
@@ -210,6 +212,8 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
 
     fun clearChat() = _ui.update { it.copy(messages = emptyList(), error = null) }
 
+    fun toggleDeepThink() = _ui.update { it.copy(deepThink = !it.deepThink) }
+
     private var genJob: kotlinx.coroutines.Job? = null
 
     fun send() {
@@ -268,14 +272,18 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
         _ui.update { it.copy(messages = msgs.take(index), input = msgs[index].text, error = null) }
     }
 
-    /** Streams one on-device answer into the last assistant bubble. */
+    /** Streams one on-device answer into the last assistant bubble.
+     * Reasoning models (DeepSeek-R1 distills) emit <think>…</think> blocks —
+     * they are hidden and shown as a "thinking…" hint until the answer starts. */
     private suspend fun streamDeviceAnswer(dm: com.promptforge.data.DeviceModel, prompt: String) {
         c.deviceEngine.chat(dm, prompt, _ui.value.temperature) { partial ->
+            val visible = renderThinking(partial)
             _ui.update { st ->
                 val msgs = st.messages.toMutableList()
+                val shown = if (visible.isBlank()) THINKING_HINT else visible
                 if (msgs.isNotEmpty() && msgs.last().role == "assistant") {
-                    msgs[msgs.lastIndex] = ChatMsg("assistant", partial)
-                } else msgs.add(ChatMsg("assistant", partial))
+                    msgs[msgs.lastIndex] = ChatMsg("assistant", shown)
+                } else msgs.add(ChatMsg("assistant", shown))
                 st.copy(messages = msgs)
             }
         }
@@ -317,6 +325,7 @@ class PlaygroundViewModel(private val c: AppContainer) : ViewModel() {
                     var prompt = buildChatPrompt(
                         _ui.value.systemPrompt,
                         _ui.value.messages.takeLast(6).map { it.role to it.text },
+                        _ui.value.deepThink,
                     )
                     try {
                         streamDeviceAnswer(dm, prompt)
@@ -713,6 +722,27 @@ fun PlaygroundScreen(onNavigate: (String) -> Unit) {
         // ── Input ──
         Spacer(Modifier.height(10.dp))
         var inputExpanded by remember { mutableStateOf(false) }
+        Row(
+            Modifier.fillMaxWidth().padding(bottom = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(if (state.deepThink) Palette.Primary.copy(alpha = 0.18f) else Palette.fill5)
+                    .clickable { vm.toggleDeepThink() }
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("🧠", style = MaterialTheme.typography.labelMedium)
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    stringResource(R.string.deep_think),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (state.deepThink) Palette.Cyan else Palette.Sub,
+                )
+            }
+        }
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             OutlinedTextField(
                 value = state.input,
@@ -867,7 +897,43 @@ private fun looksArabic(t: String): Boolean {
  * language rule mirroring the conversation — small local models need it
  * spelled out, otherwise they drift to English.
  */
-private fun buildChatPrompt(system: String?, turns: List<Pair<String, String>>): String {
+/** Heuristic difficulty probe: decides whether the request needs the full
+ *  reasoning scaffold (decompose → step-by-step → verify) or a lean fast path.
+ *  Based on published findings that structured scaffolds boost small models on
+ *  hard tasks while simple prompts stay fastest for easy ones. */
+private fun isHardTask(lastUser: String): Boolean {
+    if (lastUser.length > 200) return true
+    val hardMarkers = listOf(
+        "code", "def ", "class ", "function", "bug", "error", "sql", "regex",
+        "solve", "prove", "calculate", "equation", "math", "algorithm", "logic",
+        "analyze", "compare", "strategy", "plan ", "research", "essay", "refactor",
+        "اشرح", "حلل", "قارن", "لماذا", "احسب", "أثبت", "اثبت", "برمج", "كود",
+        "خطة", "استراتيج", "قارن", "مقال", "بحث", "حل ", "خطوات", "برنامج",
+    )
+    val lower = lastUser.lowercase()
+    return hardMarkers.any { lower.contains(it) }
+}
+
+/** Hides <think>…</think> reasoning blocks; while the model is mid-think it
+ *  returns a blank string (caller shows a "thinking…" hint). */
+private fun renderThinking(raw: String): String {
+    var out = Regex("(?s)<think>.*?</think>").replace(raw, "").trim()
+    if (raw.contains("<think>") && !raw.contains("</think>")) out = ""
+    return out
+}
+
+private const val THINKING_HINT = "🧠 …"
+
+/**
+ * Adaptive on-device prompt: smart cooperative persona + mandatory language
+ * mirroring + a difficulty-based reasoning scaffold. Deep Think forces the
+ * scaffold always; easy tasks take the lean fast path.
+ */
+private fun buildChatPrompt(
+    system: String?,
+    turns: List<Pair<String, String>>,
+    deepThink: Boolean = false,
+): String {
     val lastUser = turns.lastOrNull { it.first == "user" }?.second.orEmpty()
     val arabic = looksArabic(lastUser)
     val persona = if (arabic)
@@ -878,11 +944,31 @@ private fun buildChatPrompt(system: String?, turns: List<Pair<String, String>>):
         "[قاعدة إلزامية: اكتب ردك باللغة العربية دائماً وبنفس أسلوب المحادثة.]"
     else
         "[Mandatory rule: always reply in the same language and style as the user's messages.]"
+    val scaffold = if (deepThink || isHardTask(lastUser)) {
+        if (arabic)
+            "منهجية الحل الإلزامية:\n" +
+                "1) فكّك المهمة إلى نقاط فرعية واضحة قبل البدء.\n" +
+                "2) نفّذ كل نقطة خطوة خطوة، مع كتابة الاستنتاج بعد كل خطوة.\n" +
+                "3) تحقّق من صحة كل خطوة قبل الانتقال للتالية؛ وإن وجدت خطأً صحّحه فوراً.\n" +
+                "4) اختم بقسم بعنوان «الجواب النهائي:» يحتوي الإجابة النهائية المختصة والكاملة دون حشو.\n" +
+                "لا تختصر المنهجية في المهام المعقدة، ولا تطيل في البسيطة."
+        else
+            "Mandatory solving methodology:\n" +
+                "1) Decompose the task into clear sub-goals before starting.\n" +
+                "2) Execute each sub-goal step by step, stating the conclusion after each step.\n" +
+                "3) Verify every step before moving on; if you find an error, fix it immediately.\n" +
+                "4) End with a section titled «Final answer:» containing the concise, complete result.\n" +
+                "Do not skip the methodology on complex tasks, and do not pad simple ones."
+    } else ""
     val sys = buildString {
         append(persona)
         if (!system.isNullOrBlank()) {
             append("\n\n")
             append(system.trim())
+        }
+        if (scaffold.isNotEmpty()) {
+            append("\n\n")
+            append(scaffold)
         }
         append("\n\n")
         append(langRule)

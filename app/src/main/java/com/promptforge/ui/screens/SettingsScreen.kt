@@ -961,12 +961,17 @@ private fun DeviceModelsCard(
         Text(stringResource(R.string.device_dl_bg), style = MaterialTheme.typography.labelSmall, color = Palette.Faint)
         Spacer(Modifier.height(6.dp))
 
-        val catNames = listOf(
-            stringResource(R.string.device_cat_smollm),
-            stringResource(R.string.device_cat_olmo),
-            stringResource(R.string.device_cat_qwen),
+        val catNames = mapOf(
+            "smollm2-135m" to stringResource(R.string.device_cat_smollm),
+            "olmo2-1b" to stringResource(R.string.device_cat_olmo),
+            "qwen25-15b" to stringResource(R.string.device_cat_qwen),
+            "deepseek-r1-15b" to stringResource(R.string.device_cat_r1),
+            "lfm25-26b" to stringResource(R.string.device_cat_lfm),
+            "gemma4-e2b" to stringResource(R.string.device_cat_gemma4),
+            "qwen35-4b" to stringResource(R.string.device_cat_qwen35),
+            "phi4-mini" to stringResource(R.string.device_cat_phi4),
         )
-        DeviceModelDownloader.CATALOG.forEachIndexed { idx, spec ->
+        DeviceModelDownloader.CATALOG.forEach { spec ->
             val dl = downloads[spec.id]
             val installed = models.any { it.name == spec.fileName.substringBeforeLast('.') }
             val actionRes = when {
@@ -979,7 +984,7 @@ private fun DeviceModelsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(catNames[idx], style = MaterialTheme.typography.labelLarge, color = Palette.Ink)
+                    Text(catNames[spec.id] ?: spec.fileName, style = MaterialTheme.typography.labelLarge, color = Palette.Ink)
                     Text(
                         String.format(java.util.Locale.US, "%.2f GB", spec.sizeBytes / 1_000_000_000.0),
                         style = MaterialTheme.typography.labelSmall,

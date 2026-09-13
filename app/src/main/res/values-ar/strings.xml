@@ -283,7 +283,13 @@
     <string name="scanner_back">رجوع</string>
     <string name="scanner_rerun">إعادة التحليل</string>
     <string name="scanner_engine">تحليل بالذكاء الاصطناعي</string>
-    <string name="editor_title">محرر الموديل</string>
+    <string name="deep_think">تفكير عميق</string>
+    <string name="device_cat_r1">ديب سيك R1 — 1.5B (استدلال عميق ويعرض خطوات تفكيره)</string>
+    <string name="device_cat_lfm">إل إف إم 2.5 — 2.6B (سريع وفعال جداً)</string>
+    <string name="device_cat_gemma4">جيما 4 — E2B (أحدث موديلات جوجل الرائدة)</string>
+    <string name="device_cat_qwen35">كوين 3.5 — 4B (الأقوى شمولاً)</string>
+    <string name="device_cat_phi4">فاي 4 ميني — 3.8B (أعلى استدلال وبرمجة)</string>
+<string name="editor_title">محرر الموديل</string>
     <string name="editor_hint">اضغط على أي موديل لإعادة تسميته وضبط محركه</string>
     <string name="editor_label">الاسم المعروض</string>
     <string name="editor_tokens">الحد الأقصى للمخرجات (توكن)</string>

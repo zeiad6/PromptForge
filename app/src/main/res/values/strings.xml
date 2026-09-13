@@ -283,7 +283,13 @@
     <string name="scanner_back">Back</string>
     <string name="scanner_rerun">Re-run</string>
     <string name="scanner_engine">AI analysis</string>
-    <string name="editor_title">Model editor</string>
+    <string name="deep_think">Deep Think</string>
+    <string name="device_cat_r1">DeepSeek R1 1.5B — deep reasoning (shows thinking steps)</string>
+    <string name="device_cat_lfm">LFM 2.5 2.6B — fast &amp; very capable</string>
+    <string name="device_cat_gemma4">Gemma 4 E2B — Google\'s newest flagship</string>
+    <string name="device_cat_qwen35">Qwen 3.5 4B — strongest generalist</string>
+    <string name="device_cat_phi4">Phi-4 mini 3.8B — top-tier reasoning &amp; code</string>
+<string name="editor_title">Model editor</string>
     <string name="editor_hint">Tap a model to rename it and tune its engine</string>
     <string name="editor_label">Display name</string>
     <string name="editor_tokens">Max output tokens</string>

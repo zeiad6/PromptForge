@@ -67,6 +67,42 @@ class DeviceModelDownloader(private val registry: DeviceModelRegistry) {
                 fileName = "Qwen2.5-1.5B-Instruct_seq128_q8_ekv1280.task",
                 repoUrl = "$HF/Qwen2.5-1.5B-Instruct",
             ),
+            // ── Heavy reasoning tier (all verified un-gated, direct 206) ──
+            DeviceDownloadSpec(
+                id = "deepseek-r1-15b",
+                sizeBytes = 1_833_000_000L, // 1.83 GB — DEEP REASONING (R1 distill, <think> mode)
+                url = "$HF/DeepSeek-R1-Distill-Qwen-1.5B/resolve/main/DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
+                fileName = "DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
+                repoUrl = "$HF/DeepSeek-R1-Distill-Qwen-1.5B",
+            ),
+            DeviceDownloadSpec(
+                id = "lfm25-26b",
+                sizeBytes = 1_668_000_000L, // 1.67 GB — LiquidAI LFM2.5, very capable & efficient
+                url = "$HF/LFM2.5-2.6B/resolve/main/LFM2.5-2.6B_int4.litertlm",
+                fileName = "LFM2.5-2.6B_int4.litertlm",
+                repoUrl = "$HF/LFM2.5-2.6B",
+            ),
+            DeviceDownloadSpec(
+                id = "gemma4-e2b",
+                sizeBytes = 2_588_000_000L, // 2.59 GB — Google Gemma 4 E2B (flagship, multimodal-capable)
+                url = "$HF/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm",
+                fileName = "gemma-4-E2B-it.litertlm",
+                repoUrl = "$HF/gemma-4-E2B-it-litert-lm",
+            ),
+            DeviceDownloadSpec(
+                id = "qwen35-4b",
+                sizeBytes = 2_754_000_000L, // 2.75 GB — Qwen 3.5 4B, strongest generalist
+                url = "$HF/Qwen3.5-4B/resolve/main/Qwen3.5-4B_mixed_int4.litertlm",
+                fileName = "Qwen3.5-4B_mixed_int4.litertlm",
+                repoUrl = "$HF/Qwen3.5-4B",
+            ),
+            DeviceDownloadSpec(
+                id = "phi4-mini",
+                sizeBytes = 3_910_000_000L, // 3.91 GB — Microsoft Phi-4-mini 3.8B (top-tier reasoning + code)
+                url = "$HF/Phi-4-mini-instruct/resolve/main/Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.litertlm",
+                fileName = "Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.litertlm",
+                repoUrl = "$HF/Phi-4-mini-instruct",
+            ),
         )
     }
 
