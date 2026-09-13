@@ -139,11 +139,15 @@ class DeviceLlmEngine(private val context: Context) {
         val key = model.path + "|" + if (wantGpu) "gpu" else "cpu"
         ltlmHot?.let { (k, e) -> if (k == key) return e }
         closeLtlm()
+        runCatching { unload() } // free the MediaPipe instance's RAM before loading LiteRT-LM
 
+        // Pre-compiled model cache: dramatically faster warm starts
+        // (encodeInitialPromptParams runs once, then reuses the graph).
         val cfg = LtEngineConfig(
             modelPath = model.path,
             backend = if (wantGpu) LtBackend.GPU() else LtBackend.CPU(),
             cacheDir = context.cacheDir.absolutePath,
+            maxNumTokens = model.maxTokens,
         )
         val e = LtEngine(cfg)
         try {

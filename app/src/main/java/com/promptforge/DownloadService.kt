@@ -15,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -71,6 +73,13 @@ class DownloadService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Watchdog: if neither flag is active (e.g. the app was killed while
+        // the service survived), tear everything down and sweep the notice.
+        if (!downloadActive && !inferenceActive) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return START_NOT_STICKY
+        }
         when (intent?.action) {
             ACTION_DOWNLOAD -> {
                 downloadActive = true
@@ -89,12 +98,14 @@ class DownloadService : Service() {
             }
             ACTION_STOP_INFERENCE -> {
                 inferenceActive = false
+                val nm = getSystemService(NotificationManager::class.java)
+                nm.cancel(NOTIF_INF) // stale "AI working" notice: gone immediately
                 if (downloadActive) {
-                    // Downloads keep the service alive: drop the inference
-                    // notification and re-promote the download one.
-                    getSystemService(NotificationManager::class.java).cancel(NOTIF_INF)
                     lastDownloadNotif?.let { startAsForeground(NOTIF_DL, it) }
-                } else stopSelf()
+                } else {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    stopSelf()
+                }
             }
             else -> {
                 inferenceActive = false
@@ -115,8 +126,10 @@ class DownloadService : Service() {
                 val running = map.entries.firstOrNull { it.value.running }
                 if (running == null) {
                     downloadActive = false
-                    if (!inferenceActive) stopSelf()
-                    else nm.cancel(NOTIF_DL)
+                    if (!inferenceActive) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                    } else nm.cancel(NOTIF_DL)
                 } else {
                     val label = com.promptforge.data.DeviceModelDownloader.CATALOG
                         .firstOrNull { it.id == running.key }?.fileName ?: running.key
@@ -181,6 +194,13 @@ class DownloadService : Service() {
     }
 
     override fun onDestroy() {
+        // Hard sweep: never leave a ghost notification behind.
+        runCatching {
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.cancel(NOTIF_DL)
+            nm.cancel(NOTIF_INF)
+        }
+        runCatching { stopForeground(STOP_FOREGROUND_REMOVE) }
         wake?.let { runCatching { it.release() } }
         wake = null
         scope.cancel()

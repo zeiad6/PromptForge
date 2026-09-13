@@ -189,11 +189,14 @@ class SettingsViewModel(private val c: AppContainer) : ViewModel() {
             viewModelScope.launch { c.settings.setModel(Provider.DEVICE, name) }
             refreshDeviceModels()
         }
-            Toast.makeText(
-                c.appContext,
-                c.appContext.getString(if (ok) R.string.device_dl_done else R.string.device_dl_fail),
-                Toast.LENGTH_LONG,
-            ).show()
+            // Completion fires on an IO worker — toasts need the main looper.
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                Toast.makeText(
+                    c.appContext,
+                    c.appContext.getString(if (ok) R.string.device_dl_done else R.string.device_dl_fail),
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
         }
     }
 
